@@ -1,4 +1,4 @@
-# Checkpoint 2 — Team T10 (Introduction to Optimization, ItO2025)
+# Checkpoint 2 — Team T10 (Introduction to Optimization)
 
 Storyline B: balancing CPU load (softmax-parametrized quadratic latency), seed 10, variant 2.
 
