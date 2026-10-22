@@ -1,16 +1,34 @@
-# Checkpoint 2 — Team T10 (Introduction to Optimization)
+# Checkpoint 3 — Team T10 (Introduction to Optimization)
 
-Storyline B: balancing CPU load (softmax-parametrized quadratic latency), seed 10, variant 2.
+**Storyline:** B — Cloud Resource Allocation  
+**Variant:** B2  
+**Seed:** 10
 
-## Files
-- `checkpoint2_generator_PUBLIC.py` — public parameter generator (course-provided)
-- `checkpoint2_solution.py` — f, grad, hess; GD / momentum / Adam / Newton / damped Newton; checks; writes `results_tables.tex`
+## Project Structure
 
+- `checkpoint3_generator_PUBLIC.py` — course-provided instance generator.
+- `src/model/model_builder.py` — constructs the linear programming model in matrix form.
+- `tests/test_model.py` — tests the model dimensions, constraints, and forbidden assignments.
+- `src/lp/` — linear programming implementation.
+- `src/kkt/` — KKT analysis.
+- `src/sens/` — sensitivity analysis.
+- `experiments/` — experiment scripts.
+- `results/` — generated results.
 
-## Run
+## Run the Model
+
+From the project root:
+
+```powershell
+python src/model/model_builder.py
 ```
-pip install -r requirements.txt
-python checkpoint2_solution.py      
-pdflatex report.tex
+
+## Run Tests
+
+```powershell
+python -m unittest discover -s tests -v
 ```
 
+## AI Assistance Disclosure
+
+AI assistance was used to help develop and review the M1 matrix formulation and its tests. The team should review, understand, and verify all generated code and explanations before submission.
