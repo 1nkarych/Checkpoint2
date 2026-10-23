@@ -1,7 +1,7 @@
 key,value
 z_LP,8.339506
 solver,scipy 1.17.1 linprog(method='highs') [HiGHS]
-time_seconds,0.0107
+time_seconds,0.0078
 iterations,183
 n_fractional_y,21
 n_vms_split,9
