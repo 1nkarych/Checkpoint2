@@ -1,0 +1,25 @@
+{
+  "team": "T10",
+  "storyline": "B",
+  "variant": 2,
+  "seed": 10,
+  "model_variables": 561,
+  "model_constraint_rows": 116,
+  "z_LP": 8.339506172839506,
+  "m2_fractional_y": 21,
+  "m2_vms_split": 9,
+  "m3_kkt_values": {
+    "(a) primal feasibility": 8.881784197001252e-16,
+    "(b) dual sign": 0.0,
+    "(c) complementary slackness": 3.9803551401375986e-16,
+    "(d) reduced costs": 1.1102230246251565e-16,
+    "(e) strong duality": 5.329070518200751e-15
+  },
+  "m3_kkt_passed": true,
+  "m4_interval_ok": true,
+  "m4_table3": {
+    "left_slope": 0.49382716049368724,
+    "dual_price": 0.49382716049382713,
+    "right_slope": 0.4938271604938649
+  }
+}
