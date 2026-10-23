@@ -1,0 +1,36 @@
+{
+  "team": "T10",
+  "storyline": "B",
+  "variant": 2,
+  "seed": 10,
+  "module": "M4 sensitivity analysis",
+  "target_row": 2,
+  "step": 0.01,
+  "interval_ok": true,
+  "slope_difference": 1.7763568394002505e-13,
+  "table3": {
+    "left_slope": 0.49382716049368724,
+    "dual_price": 0.49382716049382713,
+    "right_slope": 0.4938271604938649
+  },
+  "runs": [
+    {
+      "b": 0.99,
+      "z_LP": 8.334567901234568,
+      "solve_seconds": 0.008778899966273457,
+      "max_primal_violation": 8.881784197001252e-16
+    },
+    {
+      "b": 1.0,
+      "z_LP": 8.339506172839505,
+      "solve_seconds": 0.006129200046416372,
+      "max_primal_violation": 1.4210854715202004e-14
+    },
+    {
+      "b": 1.01,
+      "z_LP": 8.344444444444443,
+      "solve_seconds": 0.006015499995555729,
+      "max_primal_violation": 8.881784197001252e-16
+    }
+  ]
+}

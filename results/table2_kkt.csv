@@ -1,0 +1,8 @@
+condition,value,tolerance,passed
+(a) primal feasibility,8.881784197e-16,1e-06,True
+(b) dual sign,0,1e-06,True
+(c) complementary slackness,3.98035514014e-16,1e-06,True
+(d) reduced costs,1.11022302463e-16,1e-06,True
+(e) strong duality,5.3290705182e-15,1e-06,True
+primal objective,8.33950617284,,
+dual objective,8.33950617284,,
