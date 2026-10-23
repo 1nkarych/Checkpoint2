@@ -1,5 +1,5 @@
 
-"""M1: Matrix formulation for Team T10, Storyline B, Variant 2."""
+"""M1: Matrix formulation for Storyline B, Variant 2."""
 
 from pathlib import Path
 import sys
