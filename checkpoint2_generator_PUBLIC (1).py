@@ -1,12 +1,4 @@
-"""Checkpoint 2 -- public parameter generator (Introduction to Optimization, ItO2025).
 
-Uses the SAME team seed as Checkpoint 1 (given in your team's task file).
-It only produces the *parameters* of the test problems. You must write the
-functions f, grad, hess yourselves (derive by hand first, then check_grad).
-
-    p = checkpoint2_params(SEED)
-    print(p)
-"""
 import numpy as np
 
 X0_QUAD = np.array([1.3, 0.7])        # common start for the quadratic test problem
