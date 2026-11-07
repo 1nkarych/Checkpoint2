@@ -13,4 +13,4 @@ final runs (GA-A): `python experiments/run_final.py --module src.meta.ga --insta
 ### Declaration (Abdimazhit Inkar)
 | Tool or source | Used for | Files | What I checked myself |
 |---|---|---|---|
-| (fill in, e.g. AI assistant) | (e.g. draft of repair rule, tests) | src/meta/ga_problem.py, tests/test_GA-P.py | (e.g. evaluate vs evaluate_B on 1000 individuals; read and rewrote every function) |
+| AI assistant chatgpt | Assistance with debugging | src/meta/ga_problem.py, tests/test_GA-P.py, experiments/exp_repair.py, results/abdimazhit_exp.csv, report/prediction_GA-P.txt, README_GA-P_section.md | Ran the GA-P tests (5 passed), the complete project test suite (11 passed), and the GA-A integration test (1,000 evaluations, feasible solution). Ran the repair experiment with five seeds and 1,000 offspring per seed, and checked the resulting CSV data. |
