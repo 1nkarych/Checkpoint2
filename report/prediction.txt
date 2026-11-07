@@ -1,0 +1,5 @@
+PREDICTION (GA-A, written BEFORE the final runs; instance cp34_instance(10,'B',2): S=11, M=50)
+Fill ratio: CPU 233/504 = 46.2 %, memory 871/1725 = 50.5 %; only 7 premium VMs have a zone condition (3-4 allowed servers each).
+1) Feasible runs: 10 of 10. The repair always returns a feasible offspring and there is plenty of room, so feasibility is not the limit.
+2) Mean gap_ref: between 0.2 % and 1.5 % (z_LP and z_ref differ by only ~0.5 %, the latency is convex, many near-balanced assignments are almost equally good). The remaining gap is limited by the repair bias and by loss of diversity, not by the budget.
+3) Diversity: the number of DISTINCT individuals will not fall to 1 (every offspring is mutated, so exact clones are rare) and stays above ~10, but the genotypes will cluster around the elite: mean pairwise Hamming distance below ~5 of 50 components within the first 10-20 % of the budget = premature convergence in structure. A larger N will not improve the cost much.

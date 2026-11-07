@@ -1,0 +1,2 @@
+{"z_LP": 8.339506172839505, "z_ref": 8.382826336851869,
+ "note": "Recomputed by me (HiGHS via scipy, outside the solver, reporting only) from the reference model of the instance cp34_instance(10,'B',2). COMPARE with the values in the team task file before submitting; edit this file if they differ."}
