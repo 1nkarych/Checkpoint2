@@ -40,6 +40,28 @@ def count_improving_moves(d, assign):
     return transfers, swaps
 
 
+def acceptance_rates(result):
+    records = result["worsening_moves"]
+    window = max(1, (result["evals"] - 1) // 10)
+
+    early = [
+        accepted
+        for evaluation, _, accepted in records
+        if 2 <= evaluation <= window + 1
+    ]
+
+    late = [
+        accepted
+        for evaluation, _, accepted in records
+        if result["evals"] - window < evaluation <= result["evals"]
+    ]
+
+    early_rate = 100 * sum(early) / len(early) if early else None
+    late_rate = 100 * sum(late) / len(late) if late else None
+
+    return early_rate, late_rate
+
+
 if __name__ == "__main__":
     d = cp34_instance(10, "B", 2)
 
@@ -49,7 +71,20 @@ if __name__ == "__main__":
     )
 
     transfers, swaps = count_improving_moves(d, result["solution"])
+    early_rate, late_rate = acceptance_rates(result)
 
+    print("Seed:", 100)
     print("Cost:", result["cost"])
+    print("Feasible:", result["feasible"])
     print("Improving transfers:", transfers)
     print("Improving swaps:", swaps)
+
+    if early_rate is not None:
+        print("Early acceptance rate:", round(early_rate, 2), "%")
+    else:
+        print("Early acceptance rate: N/A")
+
+    if late_rate is not None:
+        print("Late acceptance rate:", round(late_rate, 2), "%")
+    else:
+        print("Late acceptance rate: N/A")
