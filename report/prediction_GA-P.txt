@@ -1,0 +1,10 @@
+﻿GA-P PREDICTION — Repair Operator Experiment
+Instance: cp34_instance(10, 'B', 2)
+
+I predict that the repair operator will substantially increase the proportion of feasible offspring. Crossover and mutation can produce assignments that violate server capacities, even when both parents are feasible.
+
+I expect repair to correct zone restrictions and capacity violations, producing feasible assignments consistently for this instance.
+
+I also expect repair to have a positive effect on the quality of feasible offspring. However, this is not guaranteed because the repair procedure focuses on feasibility and balancing rather than directly minimising the objective.
+
+The prediction will be evaluated using five random seeds (100–104), with 1,000 offspring generated for each seed.
