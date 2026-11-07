@@ -1,10 +1,6 @@
 ﻿"""GA-P part: representation and problem-specific operators for storyline B (cloud), repair configuration.
 
-*** STAND-IN: this file is authored by GA-P (Inkar Abdimazhit). It is a reference implementation of the agreed
-    interface (see README, section "Agreed interface") so that ga.py (GA-A) can be run and tested.
-    Replace it by the partner's file; ga.py uses ONLY the six names below. ***
-
-Representation: individual = numpy int array `ind` of length M, ind[k] = server (0..S-1) of virtual machine k.
+individual = numpy int array `ind` of length M, ind[k] = server (0..S-1) of virtual machine k.
 
     random_individual(d, rng)            -> feasible individual (random assignment + repair)
     evaluate(d, ind)                     -> (fitness, cost, feasible); fitness = cost + RHO*violation (lower is better)
