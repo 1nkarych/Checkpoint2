@@ -1,4 +1,4 @@
-"""GA-P part: representation and problem-specific operators for storyline B (cloud), repair configuration.
+﻿"""GA-P part: representation and problem-specific operators for storyline B (cloud), repair configuration.
 
 *** STAND-IN: this file is authored by GA-P (Inkar Abdimazhit). It is a reference implementation of the agreed
     interface (see README, section "Agreed interface") so that ga.py (GA-A) can be run and tested.
@@ -21,6 +21,8 @@ TANGENTS = (0.0, 0.4, 0.7, 0.9)   # same as the generator (fixed for everyone)
 
 
 def _ctx(d):
+    if d.get('_is_ctx', False):
+        return d
     c = d.get('_ga_ctx')
     if c is not None:
         return c
@@ -44,7 +46,15 @@ def _ctx(d):
         b=np.array([um ** 2 / (1.0 - um) ** 2 for um in TANGENTS]),
         ar=np.arange(M),
     )
+
     d['_ga_ctx'] = c
+    return c
+
+
+def prepare(d):
+    """Build and return the context expected by the GA-P tests."""
+    c = _ctx(d)
+    c['_is_ctx'] = True
     return c
 
 
@@ -52,6 +62,18 @@ def _loads(c, ind):
     cpu = np.bincount(ind, weights=c['cpu_req'], minlength=c['S'])
     mem = np.bincount(ind, weights=c['mem_req'], minlength=c['S'])
     return cpu, mem
+
+
+def loads(ctx, ind):
+    """Return CPU and memory loads for each server."""
+    return _loads(_ctx(ctx), np.asarray(ind, dtype=np.int64))
+
+
+def zone_ok(ctx, ind):
+    """Check whether every VM is assigned to an allowed server."""
+    c = _ctx(ctx)
+    x = np.asarray(ind, dtype=np.int64)
+    return bool(c['allowed'][c['ar'], x].all())
 
 
 def violation(d, ind):
@@ -63,13 +85,14 @@ def violation(d, ind):
     return float(v)
 
 
-def evaluate(d, ind):
+def evaluate(d, ind, rho=None):
     c = _ctx(d)
     cpu, mem = _loads(c, ind)
     u = np.minimum(cpu / c['cpu_cap'], 1.0)
     cost = float(np.max(u[:, None] * c['a'][None, :] - c['b'][None, :], axis=1).sum())
     viol = violation(d, ind)
-    return cost + RHO * viol, cost, viol == 0.0
+    fitness = cost if rho is None else cost + float(rho) * viol
+    return fitness, cost, viol == 0.0
 
 
 def crossover(d, p1, p2, rng):
@@ -77,8 +100,10 @@ def crossover(d, p1, p2, rng):
     return np.where(mask, p1, p2)
 
 
-def mutate(d, ind, rng, n):
+def mutate(d, ind, rng, n=None):
     c = _ctx(d)
+    if n is None:
+        n = int(rng.integers(1, 3))
     x = ind.copy()
     for k in rng.choice(c['M'], size=min(n, c['M']), replace=False):
         opts = c['allowed_list'][k]
@@ -121,12 +146,17 @@ def repair(d, ind, rng):
                 util = np.where(ok, (cpu + c['cpu_req'][k]) / cc, np.inf)
                 best = (key, int(k), int(np.argmin(util)))
         if best is None:
-            return x   # cannot repair (should not happen at moderate fill); evaluate() will show the violation
+            return x   # cannot repair (should not happen at moderate fill); the remaining violation will be reported
         _, k, t = best
         cpu[l] -= c['cpu_req'][k]; mem[l] -= c['mem_req'][k]
         cpu[t] += c['cpu_req'][k]; mem[t] += c['mem_req'][k]
         x[k] = t
     return x
+
+
+def _rebuild(ctx, ind, rng):
+    """Fallback rebuild helper; uses the same data-only repair procedure."""
+    return repair(ctx, ind, rng)
 
 
 def random_individual(d, rng):
@@ -137,3 +167,4 @@ def random_individual(d, rng):
         if violation(d, x) == 0.0:
             return x
     return x
+
