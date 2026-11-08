@@ -1,11 +1,5 @@
 ﻿"""GA-P part: representation and problem-specific operators for storyline B (cloud), repair configuration.
 
-*** STAND-IN: this file is authored by GA-P (Inkar Abdimazhit). It is a reference implementation of the agreed
-    interface (see README, section "Agreed interface") so that ga.py (GA-A) can be run and tested.
-    Replace it by the partner's file; ga.py uses ONLY the six names below. ***
-
-Representation: individual = numpy int array `ind` of length M, ind[k] = server (0..S-1) of virtual machine k.
-
     random_individual(d, rng)            -> feasible individual (random assignment + repair)
     evaluate(d, ind)                     -> (fitness, cost, feasible); fitness = cost + RHO*violation (lower is better)
     crossover(d, p1, p2, rng)            -> one child (uniform crossover)
@@ -159,12 +153,16 @@ def _rebuild(ctx, ind, rng):
     return repair(ctx, ind, rng)
 
 
-def random_individual(d, rng):
+_repair_fn = repair   # у random_individual есть параметр repair, он скрывает функцию, поэтому нужен псевдоним
+
+
+def random_individual(d, rng, repair=True):
     c = _ctx(d)
+    if not repair:
+        return np.array([opts[rng.integers(len(opts))] for opts in c['allowed_list']], dtype=np.int64)
     for _ in range(50):
         x = np.array([opts[rng.integers(len(opts))] for opts in c['allowed_list']], dtype=np.int64)
-        x = repair(d, x, rng)
+        x = _repair_fn(d, x, rng)
         if violation(d, x) == 0.0:
             return x
     return x
-
