@@ -1,111 +1,28 @@
-﻿import csv
-import os
-import sys
-import time
-import numpy as np
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, ROOT)
-
-from checkpoint4_generator_PUBLIC import cp34_instance, evaluate_B
-from src.meta import ga_problem as gp
-
-INSTANCE_SEED = 10
-SEEDS = range(100, 105)
-N_OFFSPRING = 1000
-
-d = cp34_instance(INSTANCE_SEED, "B", 2)
-
-os.makedirs("results", exist_ok=True)
-
-columns = [
-    "team", "role", "seed", "offspring",
-    "feasible_before", "feasible_after",
-    "share_before", "share_after",
-    "best_cost_before", "best_cost_after",
-    "repair_failures", "seconds"
-]
-
-rows = []
-
-print("GA-P REPAIR EXPERIMENT")
-print("Instance: T10, Story B, Variant B2")
-print("Offspring per seed:", N_OFFSPRING)
-print()
-
-for seed in SEEDS:
-    rng = np.random.default_rng(seed)
-    before_count = 0
-    after_count = 0
-    failures = 0
-    best_before = float("inf")
-    best_after = float("inf")
-
-    start_time = time.time()
-
-    for i in range(N_OFFSPRING):
-        # Generate two feasible parents
-        p1 = gp.random_individual(d, rng)
-        p2 = gp.random_individual(d, rng)
-
-        # Create offspring
-        child = gp.crossover(d, p1, p2, rng)
-        n_mutations = int(rng.integers(1, 3))
-        child = gp.mutate(d, child, rng, n_mutations)
-
-        # Evaluate BEFORE repair using the official checker
-        cost_before, problems_before = evaluate_B(d, child)
-        feasible_before = len(problems_before) == 0
-
-        if feasible_before:
-            before_count += 1
-            best_before = min(best_before, cost_before)
-
-        # Apply repair
-        repaired = gp.repair(d, child, rng)
-
-        # Evaluate AFTER repair using the official checker
-        cost_after, problems_after = evaluate_B(d, repaired)
-        feasible_after = len(problems_after) == 0
-
-        if feasible_after:
-            after_count += 1
-            best_after = min(best_after, cost_after)
-        else:
-            failures += 1
-
-    elapsed = time.time() - start_time
-
-    share_before = before_count / N_OFFSPRING
-    share_after = after_count / N_OFFSPRING
-
-    row = [
-        "T10", "GA-P", seed, N_OFFSPRING,
-        before_count, after_count,
-        f"{share_before:.6f}",
-        f"{share_after:.6f}",
-        "" if best_before == float("inf") else f"{best_before:.9f}",
-        "" if best_after == float("inf") else f"{best_after:.9f}",
-        failures,
-        f"{elapsed:.2f}"
-    ]
-
-    rows.append(row)
-
-    print(f"Seed {seed}:")
-    print(f"  Feasible before repair: {share_before:.2%}")
-    print(f"  Feasible after repair:  {share_after:.2%}")
-    print(f"  Repair failures:        {failures}")
-    print(f"  Best cost before:       {best_before}")
-    print(f"  Best cost after:        {best_after}")
-    print()
-
-output = "results/abdimazhit_exp.csv"
-
-with open(output, "w", newline="", encoding="utf-8") as f:
-    writer = csv.writer(f)
-    writer.writerow(columns)
-    writer.writerows(rows)
-
-print("EXPERIMENT FINISHED")
-print("Results saved to:", output)
+import argparse, csv, json, os, sys, time
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import checkpoint4_generator_PUBLIC as gen
+from src.meta.ga import solve
+from src.meta.interface import check
+COLS = ['team', 'role', 'configuration', 'seed', 'budget', 'cost', 'evals', 'feasible', 'seconds', 'params']
+SETTINGS = [{"repair": True}, {"repair": False, "rho": 1.0}, {"repair": False, "rho": 10.0}, {"repair": False, "rho": 100.0}]
+ap = argparse.ArgumentParser()
+ap.add_argument('--out', default='results/abdimazhit_exp.csv'); ap.add_argument('--budget', type=int, default=100000)
+ap.add_argument('--setting', type=int, default=None, help='run only SETTINGS[i] (for parallel runs; then use --append)')
+ap.add_argument('--append', action='store_true')
+a = ap.parse_args()
+d = gen.cp34_instance(10, 'B', 2)
+os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
+new = not (a.append and os.path.exists(a.out))
+with open(a.out, 'a' if a.append else 'w', newline='') as fh:
+    w = csv.writer(fh)
+    if new: w.writerow(COLS)
+    for i, params in enumerate(SETTINGS):
+        if a.setting is not None and i != a.setting: continue
+        for seed in range(100, 105):
+            t0 = time.time(); res = solve(d, 2, seed, a.budget, params=params); sec = time.time() - t0
+            cost, problems = check(d, 2, res['solution'])
+            p = dict(params); p['share_feasible_offspring'] = round(res['offspring_feasible_share'], 6)
+            w.writerow(['T10', 'GA-P', 'GA, repair (exp)' if params['repair'] else 'GA, penalty (exp)', seed, a.budget,
+                        f'{cost:.9f}', res['evals'], len(problems) == 0, f'{sec:.2f}', json.dumps(p)])
+            fh.flush(); print(params, seed, f'{cost:.6f}', len(problems) == 0, p['share_feasible_offspring'])
