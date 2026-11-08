@@ -10,7 +10,10 @@ import numpy as np
 from . import ga_problem as gp
 from .interface import check
 
-DEFAULTS = dict(N=30, pc=0.9, n_mut_max=2, tournament=2, elite=1, trace_step=100)
+# repair=True : every initial individual, every offspring and `start` go through gp.repair (free of charge)
+# repair=False: gp.repair is never called; infeasible individuals stay and are punished by fitness = cost + rho * violation
+# rho         : penalty weight (also used with repair=True: then violation is 0 and fitness == cost)
+DEFAULTS = dict(N=30, pc=0.9, n_mut_max=2, tournament=2, elite=1, trace_step=100, repair=True, rho=100.0)
 
 
 def tournament(fitness, rng, k=2):
@@ -21,7 +24,7 @@ def tournament(fitness, rng, k=2):
     return int(entrants[int(np.argmin(np.asarray(fitness)[entrants]))])
 
 
-def next_generation(d, pop, fit, rng, p, n_offspring, on_offspring):
+def next_generation(d, pop, fit, rng, p, n_offspring, on_offspring, stats=None):
     """One generation. pop: list of individuals, fit: list of fitness values.
     Elitism: the `elite` best individuals are copied unchanged and free. Then `n_offspring` children are made:
     two tournament parents -> crossover with prob. pc (otherwise a copy of parent 1) -> mutation of 1..n_mut_max
@@ -34,7 +37,11 @@ def next_generation(d, pop, fit, rng, p, n_offspring, on_offspring):
         b = tournament(fit, rng, p['tournament'])
         child = gp.crossover(d, pop[a], pop[b], rng) if rng.random() < p['pc'] else pop[a].copy()
         child = gp.mutate(d, child, rng, int(rng.integers(1, p['n_mut_max'] + 1)))
-        child = gp.repair(d, child, rng)
+        if p.get('repair', True):
+            fixed = gp.repair(d, child, rng)
+            if stats is not None:
+                stats['repair_changed'] = stats.get('repair_changed', 0) + int(not np.array_equal(fixed, child))
+            child = fixed
         new_pop.append(child)
         new_fit.append(on_offspring(child))
     return new_pop, new_fit
@@ -57,13 +64,22 @@ def solve(d, variant, seed, budget, params=None, start=None):
         raise NotImplementedError('this GA implements storyline B (virtual machines on servers)')
     p = dict(DEFAULTS)
     p.update(params or {})
+    p['repair'] = bool(p['repair'])
+    rho = float(p['rho'])
+    if rho < 0:
+        raise ValueError('rho must be >= 0')
     rng = np.random.default_rng(seed)
-    st = dict(evals=0, best_cost=float('inf'), best_ind=None, least_fit=float('inf'), least_ind=None)
+    st = dict(evals=0, best_cost=float('inf'), best_ind=None, least_fit=float('inf'), least_ind=None, mode='init')
+    cnt = dict(init=0, init_feasible=0, offspring=0, offspring_feasible=0, repair_changed=0)
     trace = []
 
     def evaluate(ind):
-        fitness, cost, feasible = gp.evaluate(d, ind)
+        _, cost, feasible = gp.evaluate(d, ind)
+        fitness = cost + rho * (0.0 if feasible else gp.violation(d, ind))   # fitness = cost + rho * violation
         st['evals'] += 1
+        key = 'init' if st['mode'] == 'init' else 'offspring'
+        cnt[key] += 1
+        cnt[key + '_feasible'] += int(feasible)
         if feasible and cost < st['best_cost']:
             st['best_cost'], st['best_ind'] = cost, ind.copy()
         if fitness < st['least_fit']:
@@ -77,18 +93,21 @@ def solve(d, variant, seed, budget, params=None, start=None):
     pop, fit = [], []
     for i in range(N0):
         if i == 0 and start is not None:
-            ind = gp.repair(d, np.asarray(start, dtype=np.int64), rng)
+            ind = np.asarray(start, dtype=np.int64).copy()
+            if p['repair']:
+                ind = gp.repair(d, ind, rng)
         else:
-            ind = gp.random_individual(d, rng)
+            ind = gp.random_individual(d, rng, repair=p['repair'])
         pop.append(ind)
         fit.append(evaluate(ind))
 
+    st['mode'] = 'offspring'
     distinct, hamming = [], []
     if len(pop) == p['N']:
         distinct.append(_distinct(pop)); hamming.append(_hamming(pop))
     while st['evals'] < budget and len(pop) == p['N']:
         n_off = min(p['N'] - p['elite'], budget - st['evals'])   # last generation is cut short
-        pop, fit = next_generation(d, pop, fit, rng, p, n_off, evaluate)
+        pop, fit = next_generation(d, pop, fit, rng, p, n_off, evaluate, cnt)
         if len(pop) == p['N']:
             distinct.append(_distinct(pop)); hamming.append(_hamming(pop))
     if not trace or trace[-1][0] != st['evals']:
@@ -98,4 +117,9 @@ def solve(d, variant, seed, budget, params=None, start=None):
     solution = [int(v) for v in sol]
     cost, problems = check(d, variant, solution)
     return dict(solution=solution, cost=cost, evals=st['evals'], feasible=len(problems) == 0, trace=trace,
-                distinct=distinct, hamming=hamming, generations=len(distinct))
+                distinct=distinct, hamming=hamming, generations=len(distinct),
+                repair=p['repair'], rho=rho,
+                init_individuals=cnt['init'], init_feasible=cnt['init_feasible'],
+                offspring=cnt['offspring'], offspring_feasible=cnt['offspring_feasible'],
+                offspring_feasible_share=(cnt['offspring_feasible'] / cnt['offspring']) if cnt['offspring'] else float('nan'),
+                repair_changed=cnt['repair_changed'])

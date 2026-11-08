@@ -97,6 +97,42 @@ class TestGAA(unittest.TestCase):
         self.assertEqual(r['evals'], 500)
         self.assertLessEqual(r['cost'], base['cost'] + 1e-12)   # the start is a member of the first population
 
+    def test_repair_off_never_calls_repair(self):
+        calls = []
+        orig = gp.repair
+        gp.repair = lambda *a, **k: (calls.append(1), orig(*a, **k))[1]
+        try:
+            r = ga.solve(self.d, 2, 4, 3000, params={'repair': False, 'rho': 10}, start=[0] * 50)
+            self.assertEqual(len(calls), 0)
+            calls.clear()
+            ga.solve(self.d, 2, 4, 3000, params={'repair': True})
+            self.assertGreater(len(calls), 0)
+        finally:
+            gp.repair = orig
+        self.assertEqual(r['evals'], 3000)
+        self.assertEqual(r['feasible'], len(gen.evaluate_B(self.d, r['solution'])[1]) == 0)
+
+    def test_counters_and_rho(self):
+        for rep, rho in ((True, 100), (False, 1), (False, 10), (False, 100)):
+            r = ga.solve(self.d, 2, 6, 4000, params={'repair': rep, 'rho': rho})
+            self.assertEqual(r['evals'], 4000)
+            self.assertEqual(r['init_individuals'] + r['offspring'], 4000)
+            self.assertLessEqual(r['offspring_feasible'], r['offspring'])
+            self.assertLessEqual(r['init_feasible'], r['init_individuals'])
+            if rep:
+                self.assertEqual(r['offspring_feasible'], r['offspring'])   # repair delivers feasible offspring
+            else:
+                self.assertLess(r['offspring_feasible'], r['offspring'])    # raw offspring do violate sometimes
+            self.assertEqual(r['rho'], rho); self.assertEqual(r['repair'], rep)
+        a = ga.solve(self.d, 2, 6, 4000, params={'repair': False, 'rho': 1})
+        b = ga.solve(self.d, 2, 6, 4000, params={'repair': False, 'rho': 100})
+        self.assertNotEqual(a['trace'], b['trace'])   # rho changes the selection, hence the run
+
+    def test_default_equals_repair_true(self):
+        a = ga.solve(self.d, 2, 3, 3000)
+        b = ga.solve(self.d, 2, 3, 3000, params={'repair': True, 'rho': 100})
+        self.assertEqual(a['solution'], b['solution']); self.assertEqual(a['trace'], b['trace'])
+
 
 if __name__ == '__main__':
     unittest.main()
