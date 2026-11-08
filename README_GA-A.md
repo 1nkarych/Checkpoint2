@@ -13,16 +13,19 @@ Instance: `cp34_instance(10, 'B', 2)` (storyline B, variant 2: S = 11 servers, M
 | `src/meta/interface.py`, `experiments/run_final.py`, `check_env.py`, generator | starter kit |
 
 ## Agreed interface (GA-P ⇄ GA-A); individual = numpy int array `ind`, `ind[k]` = server of VM k
-- `random_individual(d, rng)` → feasible individual (random assignment + repair)
+- `random_individual(d, rng, repair=True)` → random assignment among the allowed servers; repaired if `repair=True`, raw if `False`
 - `evaluate(d, ind)` → `(fitness, cost, feasible)`; fitness = cost + RHO·violation (lower is better)
 - `crossover(d, p1, p2, rng)` → one child (uniform crossover); `mutate(d, ind, rng, n)` → copy with n components moved
 - `repair(d, ind, rng)` → feasible individual; reads only loads and capacities (free of charge)
+- `violation(d, ind)` → total violation (0 for feasible); ga.py computes fitness = cost + rho·violation itself from `evaluate`'s cost and this function
 All random numbers come from the `numpy.random.default_rng(seed)` created in `solve`.
 
 ## Configuration (GA, repair; rule parameters, not tuned)
 N = 30, p_c = 0.9, 1 or 2 mutated components, tournament size 2, elitism 1. Counting: every offspring and every initial individual = 1 evaluation,
 elite copy free, last generation cut short (exactly 100 000). Repair rule: (1) VM on a forbidden zone → random allowed server; (2) while a server is overloaded
 (CPU or memory): the smallest VM that cures the overload (else the largest) moves to the allowed server with room and the lowest CPU utilisation.
+Parameters of `solve` (`--params` of run_final): `repair` (True/False, default True), `rho` (default 100; used for fitness = cost + rho·violation). With `repair=False` `gp.repair` is never called (initial population, offspring and `start`). Extra entries of the result: `init_individuals`, `init_feasible`, `offspring`, `offspring_feasible`, `offspring_feasible_share`, `repair_changed`.
+Example (GA-P experiment): `python experiments/run_final.py --module src.meta.ga --instance-seed 10 --story B --variant 2 --team T10 --role GA-P --configuration "GA, no repair, rho=10" --params '{"repair": false, "rho": 10}' --out results/Abdimazhit_exp.csv`
 Random search: same repaired random individuals, same budget and seeds. `solve` also returns the extra entries `distinct`, `hamming`, `generations`.
 
 ## Reproduce everything
