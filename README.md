@@ -57,4 +57,4 @@ final runs (GA-A): `python experiments/run_final.py --module src.meta.ga --insta
 ### Declaration (Abdimazhit Inkar)
 | Tool or source | Used for | Files | What I checked myself |
 |---|---|---|---|
-| (fill in, e.g. AI assistant) | (e.g. draft of repair rule, tests) | src/meta/ga_problem.py, tests/test_GA-P.py | (e.g. evaluate vs evaluate_B on 1000 individuals; read and rewrote every function) |
+| AI assistant(Claude) | help with debugging and code implemetnting | src/meta/ga_problem.py, tests/test_GA-P.py | ran the role test and the test of the partner, ran the whole experiment myself (20 runs) and compared the results with a reference run; [ADD here, truthfully, what you read, changed or can explain yourself] |
