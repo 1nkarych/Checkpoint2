@@ -1,6 +1,21 @@
-team,role,seed,offspring,feasible_before,feasible_after,share_before,share_after,best_cost_before,best_cost_after,repair_failures,seconds
-T10,GA-P,100,1000,165,1000,0.165000,1.000000,9.652413999,9.191580436,0,1.82
-T10,GA-P,101,1000,172,1000,0.172000,1.000000,9.336264203,9.279103192,0,1.65
-T10,GA-P,102,1000,174,1000,0.174000,1.000000,9.115884553,9.040340825,0,1.68
-T10,GA-P,103,1000,199,1000,0.199000,1.000000,9.367617004,9.157630694,0,1.57
-T10,GA-P,104,1000,209,1000,0.209000,1.000000,9.888310127,9.249608634,0,1.50
+team,role,configuration,seed,budget,cost,evals,feasible,seconds,params
+T10,GA-P,"GA, repair (exp)",100,100000,8.437970297,100000,True,24.22,"{""repair"": true, ""share_feasible_offspring"": 1.0}"
+T10,GA-P,"GA, repair (exp)",101,100000,8.421956569,100000,True,17.81,"{""repair"": true, ""share_feasible_offspring"": 1.0}"
+T10,GA-P,"GA, repair (exp)",102,100000,8.420621901,100000,True,36.30,"{""repair"": true, ""share_feasible_offspring"": 1.0}"
+T10,GA-P,"GA, repair (exp)",103,100000,8.408844773,100000,True,31.90,"{""repair"": true, ""share_feasible_offspring"": 1.0}"
+T10,GA-P,"GA, repair (exp)",104,100000,8.417083749,100000,True,29.55,"{""repair"": true, ""share_feasible_offspring"": 1.0}"
+T10,GA-P,"GA, penalty (exp)",100,100000,8.463582625,100000,True,10.54,"{""repair"": false, ""rho"": 1.0, ""share_feasible_offspring"": 0.390597}"
+T10,GA-P,"GA, penalty (exp)",101,100000,8.468252865,100000,True,10.45,"{""repair"": false, ""rho"": 1.0, ""share_feasible_offspring"": 0.370781}"
+T10,GA-P,"GA, penalty (exp)",102,100000,8.572557381,100000,True,11.55,"{""repair"": false, ""rho"": 1.0, ""share_feasible_offspring"": 0.304691}"
+T10,GA-P,"GA, penalty (exp)",103,100000,8.446031650,100000,True,13.09,"{""repair"": false, ""rho"": 1.0, ""share_feasible_offspring"": 0.378163}"
+T10,GA-P,"GA, penalty (exp)",104,100000,8.452996948,100000,True,12.48,"{""repair"": false, ""rho"": 1.0, ""share_feasible_offspring"": 0.281474}"
+T10,GA-P,"GA, penalty (exp)",100,100000,8.443886868,100000,True,11.88,"{""repair"": false, ""rho"": 10.0, ""share_feasible_offspring"": 0.553656}"
+T10,GA-P,"GA, penalty (exp)",101,100000,8.436054000,100000,True,11.68,"{""repair"": false, ""rho"": 10.0, ""share_feasible_offspring"": 0.603731}"
+T10,GA-P,"GA, penalty (exp)",102,100000,8.441499234,100000,True,11.18,"{""repair"": false, ""rho"": 10.0, ""share_feasible_offspring"": 0.582325}"
+T10,GA-P,"GA, penalty (exp)",103,100000,8.477098426,100000,True,10.83,"{""repair"": false, ""rho"": 10.0, ""share_feasible_offspring"": 0.727658}"
+T10,GA-P,"GA, penalty (exp)",104,100000,8.436087932,100000,True,10.63,"{""repair"": false, ""rho"": 10.0, ""share_feasible_offspring"": 0.619816}"
+T10,GA-P,"GA, penalty (exp)",100,100000,8.497816327,100000,True,10.56,"{""repair"": false, ""rho"": 100.0, ""share_feasible_offspring"": 0.694258}"
+T10,GA-P,"GA, penalty (exp)",101,100000,8.469037548,100000,True,10.33,"{""repair"": false, ""rho"": 100.0, ""share_feasible_offspring"": 0.685816}"
+T10,GA-P,"GA, penalty (exp)",102,100000,8.473729929,100000,True,10.53,"{""repair"": false, ""rho"": 100.0, ""share_feasible_offspring"": 0.651025}"
+T10,GA-P,"GA, penalty (exp)",103,100000,8.500088897,100000,True,10.87,"{""repair"": false, ""rho"": 100.0, ""share_feasible_offspring"": 0.575343}"
+T10,GA-P,"GA, penalty (exp)",104,100000,8.492185696,100000,True,10.52,"{""repair"": false, ""rho"": 100.0, ""share_feasible_offspring"": 0.630469}"
