@@ -10,6 +10,10 @@ Instance: `cp34_instance(10, 'B', 2)` (storyline B, variant 2: S = 11 servers, M
 | `tests/test_ga_a.py` | Telgarin (GA-A) |
 | `experiments/analysis.py`, `experiments/make_report.py`, `make_all.sh`, `results/Telgarin_*` | Telgarin (GA-A) |
 | `src/meta/ga_problem.py` (representation, evaluate, crossover, mutate, repair) | Abdimazhit (GA-P) |
+| `tests/test_GA-P.py` | Abdimazhit (GA-P) |
+| `experiments/exp_repair.py`| Abdimazhit (GA-P) |
+| `results/abdimazhit_exp.csv`| Abdimazhit (GA-P) |
+| `report/prediction_GA-P.txt`| Abdimazhit (GA-P) |
 | `src/meta/interface.py`, `experiments/run_final.py`, `check_env.py`, generator | starter kit |
 
 ## Agreed interface (GA-P ⇄ GA-A); individual = numpy int array `ind`, `ind[k]` = server of VM k
