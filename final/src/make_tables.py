@@ -16,32 +16,26 @@ ref = json.load(open(os.path.join(R, 'ref_values.json'))); zref, zlp = ref['z_re
 gr = lambda z: 100 * (z - zref) / zref
 gl = lambda z: 100 * (z - zlp) / z
 
-# ---------------- Table 2
-def row(name, rows):
+# ---------------- Table 2 (layout of Telgarin: gap columns = mean / worst)
+def row(name, rows, note_feas='', note_time=''):
     c = np.array([float(r['cost']) for r in rows if r['feasible'] == 'True'])
-    return [name, c.min(), c.mean(), c.max(), c.std(ddof=1), f'{len(c)}/{len(rows)}', np.mean([float(r['seconds']) for r in rows]), gr(c.mean()), gl(c.mean())]
-t2 = [row('GA, repair ($N=30$)', rd('Telgarin_runs.csv'))]
-sa_file = os.path.join(R, 'Hafizi_runs.csv')
-if os.path.exists(sa_file):
-    t2.append(row('SA, transfer (tuned $T$)', rd('Hafizi_runs.csv')))
-else:
-    for s in rd('final_SA_summary.csv'):
-        if s['configuration'] == 'SA, transfer (tuned $T$)':
-            m = float(s['mean'])
-            t2.append([s['configuration'], float(s['best']), m, float(s['worst']), float(s['std']), s['feasible'], float(s['seconds']), gr(m), gl(m)])
+    m, w = c.mean(), c.max()
+    return [name, f'{c.min():.4f}', f'{m:.4f}', f'{w:.4f}', f'{c.std(ddof=1):.4f}', f'{len(c)}/{len(rows)}' + note_feas,
+            f"{np.mean([float(r['seconds']) for r in rows]):.1f}" + note_time, f'{gr(m):.2f} / {gr(w):.2f}', f'{gl(m):.2f} / {gl(w):.2f}']
 tun = rd('Shaken_tuning.csv')
-t2.append(row('SA, rule-based $T$ (CP4 comparison)', [r for r in tun if r['configuration'] == 'compare-rule']))
-t2.append(row('Random search (repaired, GA pair)', rd('Telgarin_random.csv')))
-t2.append(row('Random search (no repair, SA pair)', [r for r in tun if r['configuration'] == 'random']))
-ex = {r['instance']: r for r in rd('final_exact.csv')}
-z = float(ex['own']['objective'])
-t2.append(['Exact solver (HiGHS)', z, z, z, 0.0, '1/1', float(ex['own']['seconds']), gr(z), gl(z)])
+res = json.load(open(os.path.join(R, 'final_block1_reference_resolve.json')))
+t2 = [row('GA with repair ($N=30$)', rd('Telgarin_runs.csv'), '$^{*}$', '$^{*}$'),
+      row('SA, transfer (tuned, CP4)', rd('Hafizi_runs.csv')),
+      row('SA, transfer (rule parameters)', [r for r in tun if r['configuration'] == 'compare-rule'], '', '$^{**}$'),
+      row('Random search, uniform (SA pair)', [r for r in tun if r['configuration'] == 'random']),
+      row('Random search, repaired (GA pair)', rd('Telgarin_random.csv')),
+      ['Exact solver (HiGHS)', f"{res['z_ref']:.4f}", f"{res['z_ref']:.4f}", f"{res['z_ref']:.4f}", '--', '1 run, proven', f"{res['seconds_integer']:.1f}", f"{gr(res['z_ref']):.2f}", f"{gl(res['z_ref']):.2f}"]]
 with open(os.path.join(R, 'final_table2.csv'), 'w', newline='') as fh:
-    w = csv.writer(fh); w.writerow(['method', 'best', 'mean', 'worst', 'std', 'feasible', 'time_s', 'gap_ref_pct_of_mean', 'gap_LP_pct_of_mean'])
-    for r in t2: w.writerow([r[0]] + [f'{v:.6f}' if isinstance(v, float) else v for v in r[1:]])
+    w = csv.writer(fh); w.writerow(['method', 'best', 'mean', 'worst', 'std', 'feasible', 'time_s', 'gap_ref_pct_mean_worst', 'gap_LP_pct_mean_worst'])
+    for r in t2: w.writerow([x.replace('$^{*}$', '').replace('$^{**}$', '').replace('$N=30$', 'N=30') for x in r])
 with open(os.path.join(REP, 'final_table2.tex'), 'w') as fh:
-    for r in t2:
-        fh.write(f'{r[0]} & {r[1]:.4f} & {r[2]:.4f} & {r[3]:.4f} & {r[4]:.4f} & {r[5]} & {r[6]:.1f} & {abs(r[7]):.2f} & {r[8]:.2f}\\\\\n')
+    for r in t2: fh.write(' & '.join(r) + ' \\\\\n')
+for r in t2: print(r)
 
 # ---------------- Figure F1
 fig, ax = plt.subplots(figsize=(7.2, 4.0))

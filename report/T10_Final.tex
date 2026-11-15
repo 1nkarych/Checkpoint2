@@ -3,7 +3,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[margin=2.2cm]{geometry}
-\usepackage{amsmath,amssymb,booktabs,tabularx,array,graphicx,xcolor,enumitem,hyperref}
+\usepackage{amsmath,amssymb,booktabs,tabularx,xltabular,array,graphicx,xcolor,enumitem,hyperref}
 
 % ---- fill these in before compiling ---------------------------------------------------------
 \newcommand{\commithash}{\textcolor{red}{FILL IN: hash of the commit tagged final}}
@@ -35,87 +35,89 @@ Notation: $S$ servers, $M$ virtual machines (VMs); own instance $S=11$, $M=50$; 
 \section{From the Checkpoint~1 model to the reference model}
 
 \subsection*{Table 1. Element by element}
-{\small
-\begin{tabularx}{\textwidth}{@{}p{2.5cm}Xp{1.4cm}X@{}}
+{\footnotesize\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{0.95}
+\begin{xltabular}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}X@{}}
 \toprule
-Element & In Checkpoint~1 / in the reference model & Status & What it does to the meaning of the answer\\
+Element & In Checkpoint~1 / in the reference model & Kept, changed, dropped & What it does to the meaning of the answer\\
 \midrule
-Assignment variables & $x_{ij}\in\{0,1\}$, VM $i$ on server $j$ / the same variable ($x_{ik}$, server $i$, VM $k$) & kept & Nothing: an answer is still one server for every VM.\\
-Utilisation variables & $U_j=\max(U^{cpu}_j,U^{mem}_j)$ / one latency variable $t_i\ge 0$ per server, driven by CPU utilisation only & changed & Memory load no longer influences the cost; it only limits what is feasible.\\
-Objective & $\min\sum_j (U_j+U_j^2)$ / $\min\sum_i t_i$, $t_i$ = maximum of four tangents of $u/(1-u)$ at $u=0,\,0.4,\,0.7,\,0.9$ & changed & The cost is linear in pieces: below $u=0.25$ every server has slope 1, so balancing there is free, while a server near $u=0.9$ costs 100 per unit of utilisation (ours: at most 3).\\
-(1) One server per VM & $\sum_j x_{ij}=1$ / B1, 50 rows & kept & None.\\
-(2) CPU capacity & $\sum_i r^{cpu}_i x_{ij}\le c^{cpu}_j$ / B2, 11 rows & kept & None.\\
-(3) Memory capacity & $\sum_i r^{mem}_i x_{ij}\le c^{mem}_j$ / B3, 11 rows & kept & None as a constraint; it is now the only place where memory appears.\\
-(4) Premium zone & $x_{ij}=0$ for a wrong zone / the same, as upper bounds 0 on 51 pairs & kept & None (7 premium VMs).\\
-(5) Integrality & $x\in\{0,1\}$ / the same; relaxed to $[0,1]$ only to get $\zLP$ & kept & None; the relaxation gives the bound that our model did not have.\\
-Latency rows & absent / B4: $t_i\ge a_m u_i-b_m$, 44 rows & added & They make the convex latency linear, so the model is a MILP that HiGHS solves with a proof.\\
-Assumption 1: quadratic latency & $L(U)=U+U^2$ as an M/M/1-like approximation / piecewise-linear $u/(1-u)$ & changed & Our curve is too flat near full servers; the reference punishes them much harder.\\
-Assumption 2: peak resource & latency follows the larger of CPU and memory utilisation / CPU only & dropped & A server with full memory and idle CPU is ``slow'' in our model and ``fast'' in the reference one.\\
-Assumption 3: static, central & all 50 VMs placed at once / the same & kept & None.\\
-Problem class & nonlinear binary program / mixed-integer linear program & changed & An exact optimum and a lower bound become available (CP3, Table 1).\\
+\endhead
+Assignment variables & CP1: $x_{ij}\in\{0,1\}$. Reference: $y_{kl}\in\{0,1\}$ (relaxed to $[0,1]$ for $\zLP$). & kept (renamed) & Same decision (which server hosts which VM); the relaxation only gives the bound $\zLP=8.339506$.\\
+Utilisation variables & CP1: $U^{cpu}_j$, $U^{mem}_j$, $U_j=\max(U^{cpu}_j,U^{mem}_j)$. Reference: only the CPU utilisation $u_l$, inside the latency rows. & changed & The memory part of the load is no longer measured by the cost.\\
+Latency variables & CP1: none (latency is a function of $x$). Reference: $t_l\ge 0$, one per server (11). & changed (added) & Makes the nonlinear latency expressible linearly; the decision itself is not touched.\\
+Objective & CP1: $\min\sum_j (U_j+U_j^2)$. Reference: $\min\sum_l t_l$. & changed & Different function of a different argument (peak of CPU and memory against CPU only), so the two objectives can order solutions differently.\\
+Latency function & CP1: $L(U)=U+U^2$, $U$ = peak utilisation (assumed). Reference: $u/(1-u)$, replaced by the maximum of 4 tangents at $u=0,\,0.4,\,0.7,\,0.9$ (checker \texttt{latency\_B}). & changed & The reference penalises high load much more steeply (slope 100 at $u=0.9$; $U+U^2$ has slope at most 3), so it prefers more balanced CPU loads.\\
+Constraint group 1: one server per VM & $\sum_j x_{ij}=1$ / $\sum_l y_{kl}=1$ (50 rows) & kept & Every VM is placed exactly once in both models.\\
+Constraint group 2: CPU capacity & $\sum_i r^{cpu}_i x_{ij}\le c^{cpu}_j$ / same (11 rows) & kept & Same feasible set with respect to CPU.\\
+Constraint group 3: memory capacity & $\sum_i r^{mem}_i x_{ij}\le c^{mem}_j$ / same (11 rows) & kept & Same feasible set; in the reference, memory is a constraint only and does not enter the cost.\\
+Constraint group 4: premium zone & $x_{ij}=0$ if the zone differs / variables fixed to 0 (51 forbidden pairs) & kept & Hard in both models: the two feasible sets coincide.\\
+Latency rows & CP1: none. Reference: $t_l\ge$ tangent$_m(u_l)$, 44 rows. & changed (added) & $\zref$ is optimal for the piecewise-linear cost, not for $u/(1-u)$.\\
+Integrality & $x_{ij}\in\{0,1\}$ / $y_{kl}\in\{0,1\}$ & kept & Same.\\
+Assumption 1: latency from utilisation, no latency matrix & yes / yes & kept & Latency is a function of server load, not of the VM--server pair.\\
+Assumption 2: form of the latency & CP1 names M/M/1 but uses $U+U^2$. Reference uses the M/M/1 form $u/(1-u)$ (by tangents). & changed & The reference uses the form that CP1 only named; the shape at high load differs.\\
+Assumption 3: load = peak of two resources & yes / CPU only & dropped & In the reference, a server with full memory and low CPU has a low latency.\\
+Assumption 4: static, centralised allocation of all 50 VMs & yes / yes & kept & Same planning horizon, all VMs placed.\\
+Problem class & CP1: nonlinear integer program. Reference: mixed-integer linear program. & changed & The reference can be solved exactly (HiGHS); $\zref$ exists and is proven.\\
 \bottomrule
-\end{tabularx}}
+\end{xltabular}}
+
+{\small Counts of the reference model (11 latency variables, $50+22+44=116$ rows, 51 forbidden pairs, 561 variables) were checked by rebuilding the model in \texttt{final/src/final\_block1.py}. CP1 data are taken from our Checkpoint~1 report; alternatives not documented there are not listed.\par}
 
 \subsection*{Own objective on the reference solutions}
-Our Checkpoint~1 objective $\fone=\sum_j(U_j+U_j^2)$ contains no part that the reference model lacks (it needs only the loads), so it was evaluated directly on both solutions; nothing had to be replaced.
-
 \begin{tabularx}{\textwidth}{@{}X>{\raggedleft\arraybackslash}p{3.0cm}>{\raggedleft\arraybackslash}p{3.2cm}@{}}
 \toprule
 Solution & Value under the reference objective & Value under my Checkpoint~1 objective\\
 \midrule
-Optimum of the reference model ($\zref$), three placements returned by HiGHS: A & 8.382826 & 9.987753\\
-\quad B & 8.382826 & 11.294574\\
-\quad C & 8.382826 & 10.966209\\
-Best solution of the approximate methods (GA, seed 4) & 8.382826 & 10.688779\\
-Best SA solution (seed 3) & 8.391877 & 11.426841\\
-\midrule
-\emph{Extra:} reference-optimal placement with the lowest $\fone$ found & 8.382826 & 8.267809\\
-\emph{Extra:} reference-optimal placement with the highest $\fone$ found & 8.382826 & 14.428043\\
-\emph{Extra:} descent under $\fone$ alone, started from the GA solution & 12.181729 & 7.459695\\
+Optimum of the reference model ($\zref$), placement returned by HiGHS and stored in \texttt{final\_block1\_solutions.json} & 8.382826 & 11.294574\\
+Best solution of the approximate methods: GA, seed 4 & 8.382826 & 10.688779\\
+Best solution of the approximate methods: SA, seed 3 & 8.391877 & 11.426841\\
 \bottomrule
 \end{tabularx}
-{\small\raggedright Source: \texttt{results/final\_block1.csv} (\texttt{final/src/block1.py}), which re-evaluates with the checker the placements stored by \texttt{final/src/final\_block1.py} (\texttt{final\_block1\_solutions.json}, \texttt{final\_block1\_reference\_resolve.json}, \texttt{final\_block1\_optimal\_set.json}) and by \texttt{run\_exact.py}. A, B, C come from three solves of the same model (B and C from two solves of one script, A from another build). The two ``lowest/highest'' rows are incumbents of two MILPs that minimise and maximise a piecewise-linear model of $\fone$ over the placements with reference cost at most $\zref+10^{-6}$ (limit 600~s; solver gaps 0.04\,\% and 3.1\,\%). The descent is a steepest descent over transfers and swaps, a local optimum only.\par}
+{\small\raggedright Sources: \texttt{results/final\_block1\_eval.csv}, \texttt{final\_block1\_decomposition.csv} (\texttt{final/src/final\_block1.py}). The GA value equals $\zref$ up to $10^{-9}$.\par}
 
-\textbf{Order.} The optimum of the reference model is not unique, and this decides the answer. Under the reference objective A, B, C and the GA solution are tied at $\zref$. Under our objective they are 9.988, 11.295, 10.966 and 10.689: the GA solution is better than two of the three optimal placements and worse than the third. So the order of ``the reference optimum'' and ``the best approximate solution'' is kept or reversed depending on which optimum the solver happens to return; it is not a statement about GA against the exact solver. The best SA solution is last in every case (8.3919; 11.427). The reason is visible in the data: B and the GA solution have the same CPU load on every server (the CPU-only part of $\fone$ is 7.151254 for both, \texttt{final\_block1\_decomposition.csv}), so all that separates them is memory, which the reference objective does not see and which is the larger utilisation on 7 to 9 of the 11 servers.
+\textbf{Order.} Under the reference cost the order is ``optimum = GA $<$ SA''; under the Checkpoint~1 objective it is ``GA (10.6888) $<$ optimum (11.2946) $<$ SA (11.4268)''. The Checkpoint~1 objective has no part that the reference model lacks (same data, same constraints), so it was evaluated exactly on all three solutions; nothing had to be replaced.
+
+\textbf{Why.} The optimum and the GA solution have identical CPU loads on every server (the CPU-only part of $\fone$ is 7.151254 for both), so the reference cannot tell them apart; the difference of 0.6058 comes only from memory, which is the binding resource on 9 of 11 servers of the optimum and on 8 of the GA solution.
+
+\textbf{The optimum is not unique.} A second HiGHS solve gives the same $\zref=8.382826$ (proven, gap 0) but another placement, with Checkpoint~1 value 10.966209 instead of 11.294574, so the first row depends on which optimal placement the solver returns (\texttt{results/final\_block1\_reference\_resolve.json}). The order reversal is therefore not a robust statement about GA against the exact solver.
 
 \subsection*{Conclusion}
-Yes, with its own model the team would have chosen another solution. Among placements that the reference model cannot tell apart (all at $\zref$) our objective takes values at least from 8.268 to 14.428, so ``any optimum of HiGHS'' is not acceptable for our model: the best of them is 17\,\% below placement A and 23\,\% below the GA solution, and none of the five compared solutions would be chosen. If the reference cost is ignored altogether, a descent under $\fone$ reaches 7.46, and that placement costs 12.18 under the reference objective, 45\,\% above $\zref$. The cause is the dropped Assumption~2: memory is the fuller resource (871/1725 = 50.5\,\% against 233/504 = 46.2\,\% for CPU), so $\fone$ mostly balances memory, while the reference objective balances CPU only. Limits of the statement: 8.268 is an attained value with a solver gap of 0.04\,\%, 14.428 is a lower estimate of the maximum (gap 3.1\,\%), and we did not solve the Checkpoint~1 model itself, so 7.46 is only an upper bound on its optimum.
+Yes, the team would have chosen another solution with its own model. Among placements whose reference cost is $\zref+10^{-6}$ or less, the Checkpoint~1 objective takes at least all values from 8.2678 to 14.4280 (two MILPs with a piecewise-linear model of $U+U^2$ and a 600-s limit; \texttt{results/final\_block1\_optimal\_set.json}). A placement with the same reference cost 8.382826 and Checkpoint~1 value 8.267809 exists, which is 26.8\,\% below the stored optimum and 22.6\,\% below the GA solution, so none of the three compared solutions would be chosen. All these placements have the same CPU loads: the whole spread comes from memory, which the reference ignores. The ten final GA runs alone span 10.19 to 11.62 in Checkpoint~1 units (\texttt{results/final\_block1.csv}), wider than the 0.6058 between the optimum and the GA solution. Limits: 8.2678 is an attained value (solver gap 0.04\,\%, lower bound 8.2645), the maximum 14.428 is a lower estimate (gap 3.1\,\%), and the true optimum of the Checkpoint~1 model, which is not restricted to reference-optimal placements, can be lower.
 
 \section{Comparison of the methods of the team}
 
 \subsection*{Table 2}
-{\small
+{\small\setlength{\tabcolsep}{4pt}
 \begin{tabularx}{\textwidth}{@{}Xrrrrrrrr@{}}
 \toprule
-Method & best & mean & worst & std & feas. & time, s & gap$_{\mathrm{ref}}$, \% & gap$_{\mathrm{LP}}$, \%\\
+Method & best & mean & worst & std & feas./10 & time, s & gap$_{\mathrm{ref}}$, \% & gap$_{\mathrm{LP}}$, \%\\
 \midrule
 \csname @@input\endcsname final_table2.tex
 \bottomrule
 \end{tabularx}}
 \[
 \mathrm{gap}_{\mathrm{ref}}=100\cdot\frac{z-\zref}{\zref},\qquad
-\mathrm{gap}_{\mathrm{LP}}=100\cdot\frac{z-\zLP}{z}\qquad(\text{both for the mean cost } z).
+\mathrm{gap}_{\mathrm{LP}}=100\cdot\frac{z-\zLP}{z}\qquad(\text{minimization; as in Checkpoint 4}).
 \]
-{\small\raggedright Sources: \texttt{results/final\_table2.csv}, built from \texttt{Telgarin\_runs.csv} (GA), \texttt{Hafizi\_runs.csv} (SA, final runs), \texttt{Shaken\_tuning.csv} (rows \texttt{compare-rule} and \texttt{random}), \texttt{Telgarin\_random.csv}, \texttt{final\_exact.csv}. Seeds 0--9, budget 100\,000; std with divisor $n-1$. The team has two methods: GA with repair (Telgarin, Abdimazhit) and SA with transfer moves (Hafizi, Shaken). Times are those of the Checkpoint~4 files, measured on different laptops; on one machine the reruns took 11.8~s (GA), 2.2~s (SA) and 30.8~s (random search) per run (\texttt{results/final\_solutions\_*.json}).}
+{\small\raggedright Budget 100\,000 evaluations, seeds 0--9, std with divisor $n-1$; gap columns: mean / worst over the 10 runs. Sources: \texttt{results/final\_table2.csv} (\texttt{final/src/make\_tables.py}) from \texttt{Telgarin\_runs.csv} (GA), \texttt{Hafizi\_runs.csv} (SA tuned), \texttt{Shaken\_tuning.csv} (SA rule, random search of the SA pair), \texttt{Telgarin\_random.csv} (random search of the GA pair), \texttt{final\_block1\_reference\_resolve.json} (exact solver); checks in \texttt{final\_stats.json}, \texttt{final\_table2\_check.csv}. $^{*}$~The GA was timed while another job was running, so times do not compare the methods. $^{**}$~Timed in the tuning runs (lower machine load than the 3.1~s of the tuned row).\par}
 
 \subsection*{Figure F1}
 \begin{center}
 \includegraphics[width=0.8\textwidth]{final_F1.pdf}
 \end{center}
-{\small Best feasible cost so far, mean of seeds 0--9 with the min--max band (\texttt{results/final\_trace\_*.csv}: reruns of the Checkpoint~4 final runs, same seed gives the same final cost as in the Checkpoint~4 files). SA is the tuned configuration of the final runs.}
+{\small\raggedright Best feasible cost so far against evaluations (log axis), mean of seeds 0--9 with the min--max band, horizontal lines at $\zLP$ and $\zref$ (\texttt{results/final\_trace\_*.csv}: reruns of the Checkpoint~4 final runs; the same seed gives the same final cost as in the Checkpoint~4 files). SA is the tuned configuration; the random search is the one of the GA pair.\par}
 
 \subsection*{Analysis}
-\textbf{The two methods do not differ in the mean.} GA: mean 8.4143, SA: 8.4117. The difference 0.0026 is half of its paired standard error (0.0054; Welch test $p=0.70$, \texttt{results/final\_stats.json}) and seven times smaller than the GA std. With ten seeds this does not show that the methods are equal, only that the data do not separate them. Seed by seed SA is better on 4 seeds and GA on 6. What differs is the spread: the SA range $[8.3919,\,8.4258]$ lies inside the GA range $[8.3828,\,8.4459]$. GA is the only one of the two final configurations that reached $\zref$ (seed 4), and it also has the worst run. Both are far better than random search: the worst run of each (8.4459, 8.4258) is below the best random run (8.7888).
+\textbf{Which method is better?} The exact solver: it proves $\zref$ in one run (11.6~s on this instance, 561 variables, 116 rows), while the approximate methods end 0.17--0.38\,\% above it on average. It is not faster than SA (3.1~s), so speed is not an argument for it here. Between GA and SA (tuned) the data show no difference that can be separated from the noise of 10 seeds: the means differ by 0.0026 (GA 8.4143, SA 8.4117), the paired standard error is 0.0054 (Welch 0.0065), GA is lower on 6 of 10 seeds, Welch $p=0.70$, Mann--Whitney $p=1.0$, Wilcoxon $p=0.70$ (\texttt{results/final\_stats.json}). The spread between seeds is much larger than the difference: GA 8.3828--8.4459 (std 0.0184), SA 8.3919--8.4258 (std 0.0089). The std of SA is about half that of GA (Levene $p=0.058$), a weak indication that SA is more repeatable. With $n=10$, ``not significant'' does not show that the methods are equal.
 
-\textbf{Mechanism 1, the neighbourhood.} The worst-seed checks of two different members agree. GA, seed 8, cost 8.4459 (Telgarin and Abdimazhit, CP4 Table~2 and question~4): 0 improving transfers, 20 improving swaps; the best swap gains 0.0309. SA, seed 6, cost 8.4258 (Hafizi, CP4 Table~2; Shaken, question~4): 0 improving transfers, 8 improving swaps. A scan of all 20 final solutions (\texttt{results/extra\_scan\_all\_seeds.json}) shows that this is the rule and not an accident of the worst seed: 19 of 20 have an improving swap, and a descent with transfers and swaps from the final points lowers the mean to 8.389 (GA) and 8.387 (SA) and reaches $\zref$ on 5 and 6 of 10 seeds, while a descent with transfers only reaches it on 1 and 0. Neither method has a swap move: SA proposes only transfers, and the GA mutation moves one or two VMs and makes a given swap only by chance. The missing swap is the common limit of both methods.
+\textbf{SA parameters (tuning).} The tuned parameters ($T_0=1.057$, $T_{end}=0.0105$) came from 80 Nelder--Mead calls on 5 tuning seeds (100--104). They were better on those seeds (mean 8.3954 against 8.4069 for the rule setting $T_0=2.109$, $T_{end}=0.00372$; the standard error of a 5-run mean is 0.0067), but on the seeds 0--9 the rule setting is better: mean 8.3975 against 8.4117, Welch $p=0.003$, Mann--Whitney $p=0.004$, lower on 9 of 10 seeds; it reached $\zref$ in 1 run of 10, the tuned one in 0. The gain of the tuning was of the size of the noise and did not carry over. The SA row of Table~2 is therefore the tuned setting of Checkpoint~4, not the best SA of the team; the GA--SA comparison above was not repeated for the rule setting (\texttt{results/final\_sa\_files.json}).
 
-\textbf{Mechanism 2, budget and schedule (the shape of F1).} The two methods arrive at this limit differently. Of the GA final solutions 8 of 10 have no improving transfer: the GA is at the edge of its neighbourhood. It is within 1\,\% of its final mean after 11\,\% of the budget and gains only 0.0015 in the last 10\,\% (CP4 Telgarin, question~3): stuck, not short of budget. Of the SA final solutions only 4 of 10 have no improving transfer: SA is stopped by its schedule before it has finished even the transfer neighbourhood. It follows its cooling, 8.650 at 50\,000 evaluations, 8.426 at 90\,000, 8.412 at the end, and still improves in the last 5\,\% (CP4 Hafizi, question~3). So at any budget below about 90\,000 evaluations GA is the better method; at the full budget they meet.
+\textbf{Mechanism: the neighbourhood.} For the worst GA seed (8, cost 8.4459) no transfer improves but 20 swaps do; the best swap ($-0.0309$) gives 8.4150, and a descent with transfers and swaps reaches $\zref$ (Telgarin and Abdimazhit, CP4 Table~2 and question~4). The same holds for the worst SA seed (6, 8.4258): 0 improving transfers, 8 improving swaps, best swap $-0.0301$ (Hafizi, CP4 Table~2). Over all seeds, 8 of 10 GA solutions have no improving transfer, 9 of 10 have an improving swap, and a descent with transfers and swaps reaches $\zref$ from 5 of 10 (transfers alone: 1 of 10); for SA 6 of 10 end with an improving transfer, 10 of 10 have an improving swap, and the descent reaches $\zref$ from 6 of 10 (\texttt{results/extra\_scan\_all\_seeds.json}). So both methods mostly stop at a local optimum of the transfer neighbourhood that is not one of the swap neighbourhood. A swap move would be the natural next step; it was not implemented, so this explanation is consistent with the numbers but not tested.
 
-\textbf{Mechanism 3, tuning.} The SA row of the final runs is not the best SA we have. The Nelder--Mead tuning on seeds 100--104 chose $T_0=1.057$, $T_{end}=0.0105$; on seeds 0--9 the rule-based pair ($T_0=2.109$, $T_{end}=0.0037$) is better on 9 of 10 seeds (mean 8.3975 against 8.4117; CP4 Shaken, tuning table). The difference between the two SA settings is clear (Welch $p=0.003$, \texttt{results/final\_sa\_files.json}). Against GA the rule-based SA is better by 0.0168, about 2.6 standard errors, and reaches $\zref$ on seed 6. So the ranking ``SA $\approx$ GA'' holds for the tuned parameters only; with the rule-based temperatures SA is ahead, and the tuning lost more (0.17 points of gap$_{\mathrm{ref}}$) than the choice between GA and SA matters (0.03 points).
+\textbf{Mechanism: budget and schedule (F1).} The two methods reach this limit differently. GA is within 1\,\% of its final mean after 11\,\% of the budget and gains only 0.0015 in the last 10\,\% (CP4 Telgarin, question~3): it is stuck, not short of budget. SA follows its cooling: 8.650 at 50\,000 evaluations, 8.426 at 90\,000, 8.412 at the end, still improving in the last 5\,\% (CP4 Hafizi, question~3); this fits the 6 of 10 SA solutions that still have an improving transfer. Below about 90\,000 evaluations GA is the better method; at the full budget they meet.
 
-\textbf{Mechanism 4, repair.} Repaired random candidates give 8.8468, unrepaired ones 9.2093 (only about 4\,\% of them are feasible, \texttt{Shaken\_tuning.csv}); inside the GA, repair gave 8.4213 against 8.4469--8.4866 with a penalty (CP4 Abdimazhit, Section~5, five seeds, ranges overlap: a tendency). Repair helps, but it is not what separates GA from SA: SA never leaves the feasible set at all.
+\textbf{Random search and the gap.} Random search of the SA pair ends 9.86\,\% above $\zref$ (worst run 11.15\,\%) against 0.34--0.38\,\% for the team methods, so the search structure of GA and SA is what produces the quality. The conclusion does not depend on which random baseline is used: the repaired random search of the GA pair (mean 8.8468, 5.53\,\%) is also far above both. Repair also helps inside the GA (8.4213 against 8.4469--8.4866 with a penalty, CP4 Abdimazhit, Section~5), but with five seeds the ranges overlap, so this is a tendency. The mean gap$_{\mathrm{LP}}$ of 0.86--0.89\,\% splits exactly into the integrality gap of the model, 0.515\,\%, which no method can remove, and the part due to the method, 0.343\,\% (SA) and 0.374\,\% (GA).
 
-\textbf{The bound.} The gap of the relaxation itself is 0.52\,\% (the exact row). Of the 0.86--0.89\,\% gap$_{\mathrm{LP}}$ of the methods, 0.52 points belong to the bound and only 0.34--0.38 to the methods.
+\textbf{What we do not claim.} That GA is better than SA or the reverse; that the swap explanation is proven; that SA would reach $\zref$ with a larger budget (not run); that the times compare the methods.
 
 \section{Scaling}
 
@@ -166,19 +168,19 @@ Size & Method & \multicolumn{2}{c}{Value} & Best & \multicolumn{2}{c}{Gap to bes
 \midrule
 Problem & 50 VMs on 11 servers, 7 premium VMs tied to a zone; CPU fill 46\,\%, memory 50\,\% & 200 VMs on 57 servers; CPU fill 33\,\% & 400 VMs on 114 servers; CPU fill 36\,\% \\
 Method & Exact solver (HiGHS on the linear model) & Exact solver stopped at 120~s; its incumbent is used & Simulated annealing (transfer moves), 10 seeds, best run taken; HiGHS run alongside only for the bound\\
-Result and its level (gap) & 8.3828, proven optimal (solver gap 0) in 7~s. SA and GA: 0.34\,\% and 0.38\,\% above on average & 24.93, at most 0.23\,\% above the optimum (solver gap; not proven); a second run gave 24.90 with gap 0.12\,\%. GA and SA: 0.4--1.2\,\% worse & 55.5809 best of 10 SA runs, mean 55.7424; best known 55.5651 (a GA run). At most 1.3--1.6\,\% above the optimum (bound 54.8453). Exact incumbent: 61.20, 10.1\,\% worse\\
+Result and its level (gap) & 8.3828, proven optimal (solver gap 0) in 7--12~s. SA and GA: 0.34\,\% and 0.38\,\% above on average & 24.93, at most 0.23\,\% above the optimum (solver gap; not proven); a second run gave 24.90 with gap 0.12\,\%. GA and SA: 0.4--1.2\,\% worse & 55.5809 best of 10 SA runs, mean 55.7424; best known 55.5651 (a GA run). At most 1.3--1.6\,\% above the optimum (bound 54.8453). Exact incumbent: 61.20, 10.1\,\% worse\\
 Check & Checker \texttt{evaluate\_B} reports no violation; value equals the LP-based reference of Checkpoint~3; GA reaches the same value independently & Checker passes; the gap is read from the best bound of the solver, not from the word ``Optimal'' & Checker passes on 10 of 10 runs; fixed seeds reproduce the costs; spread between seeds 0.6\,\% (55.58--55.90) \\
 Risk & None for the value. Solve time may vary between machines & 0.23\,\% may remain; the incumbent at the limit differs between runs (24.93 and 24.90), and another instance of this size may end with a larger gap & No proof; the result depends on the seed, so one run can be 0.6\,\% worse than the best; SA parameters were tuned on the small instance\\
 \bottomrule
 \end{tabularx}}
 
 \subsection*{Recommendation for the real situation}
-Use the exact solver with a time limit as the first tool and look at its solver gap. Up to about 100 VMs it returns the proven optimum in under half a minute, and at 200 VMs its unproven answer is still better than anything our heuristics found, so there is no reason to accept a heuristic there. When the gap after the limit is large (10.4\,\% at 400 VMs), switch to simulated annealing with 10 seeds and keep the solver's bound as the quality certificate. We prefer SA to the genetic algorithm for this role because at 400 VMs the two give the same quality (mean 55.74 for both), while SA is the simpler program, needs no repair procedure and ran faster (14~s against 21~s per run on the same machine). GA is not wrong, it is just not better; at 200 VMs it was slightly ahead of SA, but there the exact solver beats both. Random search is never an option (5.5\,\% above the optimum on the own instance). One caution for SA: use the rule-based temperatures, not the tuned ones; on the own instance the tuned pair was worse on 9 of 10 seeds.
+Use the exact solver with a time limit as the first tool and look at its solver gap. Up to about 100 VMs it returns the proven optimum in under half a minute, and at 200 VMs its unproven answer is still better than anything our heuristics found, so there is no reason to accept a heuristic there. When the gap after the limit is large (10.4\,\% at 400 VMs), switch to simulated annealing with 10 seeds and keep the solver's bound as the quality certificate. We prefer SA to the genetic algorithm for this role because at 400 VMs the two give the same quality (mean 55.74 for both), while SA is the simpler program, needs no repair procedure and ran faster (14~s against 21~s per run on the same machine). GA is not wrong, it is just not better; at 200 VMs it was slightly ahead of SA, but there the exact solver beats both. Random search is never an option (5.5--9.9\,\% above the optimum on the own instance). One caution for SA: use the rule-based temperatures, not the tuned ones; on the own instance the tuned pair was worse on 9 of 10 seeds.
 
 \subsection*{What would change the recommendation}
 \emph{Size and time.} The switch from the exact solver to SA is decided by one measurable number: the solver gap at the end of the time limit. Below about 1\,\% (the level SA and GA reach) keep the exact incumbent; above it take SA. In our data this happens between 200 and 400 VMs for a limit of 120~s; a longer limit moves the switch to larger sizes.
 \emph{Fill ratio.} All our instances are loose (CPU fill 28--46\,\%, memory at most 50\,\%). If the fill ratio approaches 100\,\%, as in the heaviest instances of Checkpoint~3, the recommendation for large sizes is no longer supported: the SA start is built by a greedy rule that may fail to find any feasible placement, transfer moves are mostly blocked on full servers (a swap move would be needed, and both methods already lack it), and the GA repair returns an unrepaired individual when no VM can be moved. The measurable trigger is the number of feasible runs: if fewer than 10 of 10 runs are feasible, or the fill ratio exceeds about 90\,\%, we would first add the swap move and re-run the comparison, and until then rely on the exact solver with a longer limit, whose answer is at least feasible by construction.
-\emph{Objective.} If the owner's latency really depends on memory as well as on CPU (our Checkpoint~1 assumption), the whole ranking has to be redone: Section~1 shows that the best placement for one objective is 45\,\% worse for the other.
+\emph{Objective.} If the owner's latency really depends on memory as well as on CPU (our Checkpoint~1 assumption), the whole ranking has to be redone: Section~1 shows that placements which are equally good for the reference objective range from 8.27 to 14.43 under the memory-aware one.
 
 \appendix
 \section{Authorship}

@@ -1,7 +1,7 @@
-method,best,mean,worst,std,feasible,time_s,gap_ref_pct_of_mean,gap_LP_pct_of_mean
-"GA, repair ($N=30$)",8.382826,8.414277,8.445889,0.018362,10/10,24.007000,0.375176,0.888615
-"SA, transfer (tuned $T$)",8.391877,8.411701,8.425815,0.008911,10/10,3.121000,0.344450,0.858267
-"SA, rule-based $T$ (CP4 comparison)",8.382826,8.397487,8.413456,0.009522,10/10,1.649000,0.174885,0.690450
-"Random search (repaired, GA pair)",8.788784,8.846772,8.938826,0.054081,10/10,64.320000,5.534478,5.733909
-"Random search (no repair, SA pair)",9.066985,9.209335,9.317374,0.075410,10/10,10.376000,9.859546,9.445077
-Exact solver (HiGHS),8.382826,8.382826,8.382826,0.000000,1/1,7.300000,0.000000,0.516773
+method,best,mean,worst,std,feasible,time_s,gap_ref_pct_mean_worst,gap_LP_pct_mean_worst
+GA with repair (N=30),8.3828,8.4143,8.4459,0.0184,10/10,24.0,0.38 / 0.75,0.89 / 1.26
+"SA, transfer (tuned, CP4)",8.3919,8.4117,8.4258,0.0089,10/10,3.1,0.34 / 0.51,0.86 / 1.02
+"SA, transfer (rule parameters)",8.3828,8.3975,8.4135,0.0095,10/10,1.6,0.17 / 0.37,0.69 / 0.88
+"Random search, uniform (SA pair)",9.0670,9.2093,9.3174,0.0754,10/10,10.4,9.86 / 11.15,9.45 / 10.50
+"Random search, repaired (GA pair)",8.7888,8.8468,8.9388,0.0541,10/10,64.3,5.53 / 6.63,5.73 / 6.70
+Exact solver (HiGHS),8.3828,8.3828,8.3828,--,"1 run, proven",11.6,0.00,0.52
