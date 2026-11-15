@@ -1,0 +1,15 @@
+solution,reference_objective,cp1_objective,feasible,servers_where_memory_util_exceeds_cpu_util,hamming_to_reference_optimum
+reference optimum (HiGHS),8.382826337,9.987752624,True,7,0
+"best approximate solution (GA, seed 4)",8.382826337,10.688779289,True,8,45
+GA seed 0,8.415025202,10.275248612,True,7,43
+GA seed 1,8.402116460,11.063582654,True,8,43
+GA seed 2,8.404378061,10.192431458,True,8,42
+GA seed 3,8.418883227,10.785082005,True,8,43
+GA seed 4,8.382826337,10.688779289,True,8,45
+GA seed 5,8.402116460,10.969964459,True,6,42
+GA seed 6,8.436087932,10.962672254,True,7,41
+GA seed 7,8.409629456,11.622767704,True,7,41
+GA seed 8,8.445889400,10.987593431,True,9,44
+GA seed 9,8.425814593,10.986939948,True,6,43
+descent under f_CP1 from the reference optimum (24 steps),13.719586799,7.469753469,True,3,24
+descent under f_CP1 from the best GA solution (22 steps),12.181729493,7.459694849,True,6,45
