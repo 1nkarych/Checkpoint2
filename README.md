@@ -11,41 +11,44 @@ Run everything from the repository root.
 
 | Step | Command | Writes |
 |---|---|---|
-| LP relaxation and LP-rounded starts | `python final/src/make_starts.py` | `final/starts/rounded_B_*.json`, `results/final_lp_rounding.csv` |
-| Exact solver, own instance and M = 100, 200, 400 (limit 120 s) | `rm -f results/final_exact.csv; python final/src/run_exact.py --own; for s in 100 200 400; do python final/src/run_exact.py --size $s; done` | `results/final_exact.csv`, `final/starts/exact_B_*.json` |
-| GA, own start (per size) | `python experiments/run_scaling.py --module src.meta.ga --story B --variant 2 --size 100 --team T10 --configuration "GA, repair" --out results/final_GA_repair.csv --append` | `results/final_GA_repair.csv` |
-| GA, LP-rounded start (per size) | same with `--configuration "GA, repair, LP-rounded start" --start-file final/starts/rounded_B_100.json` | `results/final_GA_repair.csv` |
-| SA, own start (per size) | `python experiments/run_scaling.py --module src.meta.sa --story B --variant 2 --size 100 --team T10 --configuration "SA, transfer, own start" --params '{"T0": 1.0570236966839537, "Tend": 0.010473720352671537}' --out results/final_SA_scaling.csv --append` | `results/final_SA_scaling.csv` |
-| SA, LP-rounded start (per size) | same with `--configuration "SA, transfer, LP-rounded start" --start-file final/starts/rounded_B_100.json` | `results/final_SA_scaling.csv` |
+| Second run (Abdimazhit): LP relaxation and LP-rounded starts | `python final/src/make_starts.py` | `final/starts/rounded_B_*.json`, `results/final_lp_rounding.csv` |
+| Second run: exact solver, own instance and M = 100, 200, 400 (limit 120 s) | `rm -f results/final_exact.csv; python final/src/run_exact.py --own; for s in 100 200 400; do python final/src/run_exact.py --size $s; done` | `results/final_exact.csv`, `final/starts/exact_B_*.json` |
+| Second run: GA, own start (per size) | `python experiments/run_scaling.py --module src.meta.ga --story B --variant 2 --size 100 --team T10 --configuration "GA, repair" --out results/final_GA_repair.csv --append` | `results/final_GA_repair.csv` |
+| Second run: GA, LP-rounded start (per size) | same with `--configuration "GA, repair, LP-rounded start" --start-file final/starts/rounded_B_100.json` | `results/final_GA_repair.csv` |
+| Second run: SA, own start (per size) | `python experiments/run_scaling.py --module src.meta.sa --story B --variant 2 --size 100 --team T10 --configuration "SA, transfer, own start" --params '{"T0": 1.0570236966839537, "Tend": 0.010473720352671537}' --out results/final_SA_scaling.csv --append` | `results/final_SA_scaling.csv` |
+| Second run: SA, LP-rounded start (per size) | same with `--configuration "SA, transfer, LP-rounded start" --start-file final/starts/rounded_B_100.json` | `results/final_SA_scaling.csv` |
 | Traces for Figure F1 and final solutions (reruns of the CP4 final runs) | `python final/src/traces.py --module src.meta.ga --name GA; python final/src/traces.py --module src.meta.sa --name SA --params '{"T0": 1.0570236966839537, "Tend": 0.010473720352671537}'; python final/src/traces.py --module src.meta.random_search --name random` | `results/final_trace_*.csv`, `results/final_solutions_*.json` |
-| Block 1, three solutions under the CP1 objective (Telgarin) | `python final/src/final_block1.py` | `results/final_block1_eval.csv`, `results/final_block1_solutions.json` |
-| Block 1, table of the report (both optimal placements, GA, SA, descents) | `python final/src/block1.py` | `results/final_block1.csv` |
-| Block 2, neighbourhood scan of all final solutions (Telgarin; imports `final_block2.py`) | `python final/src/extra_scan.py` | `results/extra_scan_all_seeds.json` |
+| Block 1 (Telgarin): three solutions under the CP1 objective, second solve, optimal set | `python final/src/final_block1.py` (options in the header of the file; the optimal-set MILPs take 2 x 600 s) | `results/final_block1_eval.csv`, `final_block1_decomposition.csv`, `final_block1_solutions.json`, `final_block1_reference_resolve.json`, `final_block1_optimal_set.json` |
+| Block 1, table of the report (re-evaluates all stored placements with the checker) | `python final/src/block1.py` | `results/final_block1.csv` |
+| Block 2 (Telgarin): statistics, SA files, neighbourhood scan of all final solutions | `python final/src/final_stats.py; python final/src/final_sa_files.py; python final/src/extra_scan.py` | `results/final_stats.json`, `final_table2_check.csv`, `final_sa_files.json`, `final_sa_table.csv`, `extra_scan_all_seeds.json` |
+| Block 3, run of Table 3 (Hafizi): exact solver, GA and SA from both starts, M = 100, 200, 400 | scaling script of Hafizi in `final/src/` (command in its header) | `results/final_scaling_exact.csv`, `final_scaling_lp.csv`, `final_scaling_methods.csv`, `final_LP_rounded_B2_*.json`, `final_table3.csv`, `final_environment.json`, `run_manifest.json` |
 | SA start check (Block 3) | `python final/src/sa_start_check.py` | `results/final_SA_start_check.csv` |
-| Tables 2, 3 and Figures F1, F2 | `python final/src/make_tables.py` | `results/final_table2.csv`, `results/final_table3.csv`, `report/final_table*.tex`, `report/final_F1.pdf`, `report/final_F2.pdf` |
+| Tables 2, 3 and Figures F1, F2 | `python final/src/make_tables.py` | `results/final_table2.csv`, `results/final_table3_report.csv`, `report/final_table*.tex`, `report/final_F1.pdf`, `report/final_F2.pdf` |
 | PDF | `cd report && pdflatex T10_Final.tex && pdflatex T10_Final.tex` | `report/T10_Final.pdf` |
 
-Replace 100 by 200 and 400 for the other sizes. `final/src/final_block2.py` is the library of `extra_scan.py`; if it is run on its own it rewrites `results/final_table2.csv` in another layout, so run `make_tables.py` after it. Costs of the approximate runs are deterministic (fixed seeds). The exact solver is stopped by a wall-clock limit, so at M = 200 and M = 400 its incumbent, bound and gap can differ a little between machines; times always do.
+Replace 100 by 200 and 400 for the other sizes. Block 3 was run twice (two machines, two rounding rules): Table 3 of the report is the run of Hafizi, the second run gives the best known values and a check. `final/src/final_block2.py` is the library of `extra_scan.py`; if it is run on its own it rewrites `results/final_table2.csv` in another layout, so run `make_tables.py` after it. Costs of the approximate runs are deterministic (fixed seeds). The exact solver is stopped by a wall-clock limit, so at M = 200 and M = 400 its incumbent, bound and gap can differ a little between machines; times always do.
 
 ### Which file of results/ is behind which part of the report
 
 | Part of the report | File in `results/` |
 |---|---|
-| Block 1, table of solutions | `final_block1.csv`, `final_block1_eval.csv` |
+| Block 1, table of solutions | `final_block1.csv` (from `final_block1_solutions.json`, `final_block1_reference_resolve.json`, `final_block1_optimal_set.json`, `final_block1_decomposition.csv`) |
 | Table 2 | `final_table2.csv` (from `Telgarin_runs.csv`, `Hafizi_runs.csv`, `Shaken_tuning.csv`, `Telgarin_random.csv`, `final_exact.csv`) |
 | Figure F1 | `final_trace_GA.csv`, `final_trace_SA.csv`, `final_trace_random.csv` |
-| Block 2, analysis | `analysis.json`, `extra_scan_all_seeds.json`, `abdimazhit_exp.csv`, `Shaken_tuning.csv`, `Telgarin_Nexp.csv` |
-| Table 3 | `final_table3.csv` (from `final_exact.csv`, `final_GA_repair.csv`, `final_SA_scaling.csv`) |
-| Figure F2 | `final_exact.csv` |
-| Block 3, analysis | `final_lp_rounding.csv`, `final_SA_start_check.csv` |
+| Block 2, analysis | `analysis.json`, `final_stats.json`, `final_sa_files.json`, `extra_scan_all_seeds.json`, `abdimazhit_exp.csv`, `Shaken_tuning.csv`, `Telgarin_Nexp.csv` |
+| Table 3 | `final_table3_report.csv` (from `final_scaling_exact.csv`, `final_scaling_methods.csv`; best known also from `final_exact.csv`, `final_GA_repair.csv`, `final_SA_scaling.csv`) |
+| Figure F2 | `final_scaling_exact.csv`, `final_exact.csv` |
+| Block 3, analysis | `final_scaling_lp.csv`, `final_SA_start_check.csv`, second run: `final_exact.csv`, `final_lp_rounding.csv` |
 
 ### Final - authorship of the files
 
 | Files | Author |
 |---|---|
 | `final/src/model_b.py`, `run_exact.py`, `make_starts.py`, `traces.py`, `block1.py`, `sa_start_check.py`, `make_tables.py`; `final/starts/`; `results/final_*` except the files below | Abdimazhit |
-| `final/src/final_block1.py`, `cp1_eval.py`, `final_block2.py`, `extra_scan.py`; `results/final_block1_eval.csv`, `final_block1_solutions.json`, `extra_scan_all_seeds.json` | Telgarin |
-| `src/meta/sa.py`, `results/Hafizi_runs.csv`, `results/Shaken_tuning.csv` | Hafizi, Shaken (Checkpoint 4, SA pair); committed by Abdimazhit before the deadline |
+| `final/src/final_block1.py`, `final_stats.py`, `final_sa_files.py`, `final_block2.py`, `extra_scan.py`; `results/final_block1_eval.csv`, `final_block1_decomposition.csv`, `final_block1_solutions.json`, `final_block1_reference_resolve.json`, `final_block1_optimal_set.json`, `final_stats.json`, `final_table2_check.csv`, `final_sa_files.json`, `final_sa_table.csv`, `extra_scan_all_seeds.json` | Telgarin |
+| scaling script of Block 3; `results/final_scaling_*.csv`, `final_LP_rounded_B2_*.json`, `final_table3.csv`, `final_environment.json`, `run_manifest.json`, `final_block3_analysis.md` | Hafizi |
+| `src/meta/sa.py`, `results/Hafizi_runs.csv`, `tests/test_sa_i.py`, `experiments/sa_i_analysis.py`, `experiments/sa_i_worst_seed.py` | Hafizi (Checkpoint 4, branch `sa-i-hafizi`, merged into `main` for the Final) |
+| `results/Shaken_tuning.csv` | Shaken (Checkpoint 4); committed by Abdimazhit before the deadline |
 | `experiments/run_scaling.py`, `experiments/exact_helper.py`, `check_env.py`, generator | Final kit |
 
 ### Final - declarations

@@ -1,7 +1,8 @@
 """Final, Block 1: the reference optimum and the best solution of the approximate methods under the Checkpoint 1 objective
     f_CP1 = sum_j (U_j + U_j^2),  U_j = max(CPU utilisation, memory utilisation) of server j.
   python final/src/block1.py     -> results/final_block1.csv
-Needs final/starts/exact_B_own.json (run_exact.py --own) and results/final_solutions_GA.json (traces.py)."""
+Needs final/starts/exact_B_own.json (run_exact.py --own), results/final_solutions_GA.json and final_solutions_SA.json (traces.py);
+reads results/final_block1_solutions.json (final_block1.py) if present: a second optimal placement of the reference model."""
 import csv, json, os, sys
 import numpy as np
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -60,9 +61,21 @@ def descent(assign):
 
 exact = json.load(open(os.path.join(ROOT, 'final', 'starts', 'exact_B_own.json')))['assign']
 ga = json.load(open(os.path.join(ROOT, 'results', 'final_solutions_GA.json')))
-rows = [('reference optimum (HiGHS)', exact)]
+rows = [('reference optimum, placement A (HiGHS run of final/src/run_exact.py)', exact)]
+R = os.path.join(ROOT, 'results')
+if os.path.exists(os.path.join(R, 'final_block1_solutions.json')):      # files written by final/src/final_block1.py (Telgarin)
+    rows.append(('reference optimum, placement B (first solve of final_block1.py)', json.load(open(os.path.join(R, 'final_block1_solutions.json')))['solutions']['Reference optimum (exact)']['assign']))
+if os.path.exists(os.path.join(R, 'final_block1_reference_resolve.json')):
+    rows.append(('reference optimum, placement C (second solve of final_block1.py)', json.load(open(os.path.join(R, 'final_block1_reference_resolve.json')))['returned_assignment']))
+if os.path.exists(os.path.join(R, 'final_block1_optimal_set.json')):
+    os_ = json.load(open(os.path.join(R, 'final_block1_optimal_set.json')))
+    rows.append(('reference-optimal placement with the lowest f_CP1 found (final_block1.py, MILP, 600 s)', os_['min']['assign']))
+    rows.append(('reference-optimal placement with the highest f_CP1 found (final_block1.py, MILP, 600 s)', os_['max']['assign']))
 best_seed = min(ga, key=lambda s: (ga[s]['cost'], int(s)))
 rows.append((f'best approximate solution (GA, seed {best_seed})', ga[best_seed]['assign']))
+sa_sol = json.load(open(os.path.join(ROOT, 'results', 'final_solutions_SA.json')))
+sbest = min(sa_sol, key=lambda s: (sa_sol[s]['cost'], int(s)))
+rows.append((f'best SA solution (seed {sbest})', sa_sol[sbest]['assign']))
 for s in sorted(ga, key=int):
     rows.append((f'GA seed {s}', ga[s]['assign']))
 loc, v, steps = descent(exact)

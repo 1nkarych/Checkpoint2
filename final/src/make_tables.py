@@ -2,7 +2,7 @@
   python final/src/make_tables.py
 Reads  results/Telgarin_runs.csv, Telgarin_random.csv, ref_values.json, final_SA_summary.csv, final_trace_*.csv,
        final_GA_repair.csv, final_exact.csv, final_block1.csv
-Writes results/final_table2.csv, results/final_table3.csv, report/final_F1.pdf, report/final_F2.pdf and
+Writes results/final_table2.csv, results/final_table3_report.csv (Table 3; results/final_table3.csv is the file of Hafizi's script), report/final_F1.pdf, report/final_F2.pdf and
        report/final_numbers.tex (LaTeX macros with the numbers used in the text)."""
 import csv, json, os
 import numpy as np
@@ -66,49 +66,47 @@ ax.set_xscale('log'); ax.set_xlim(100, 100000); ax.set_ylim(8.3, 9.4)
 ax.set_xlabel('evaluations'); ax.set_ylabel('best feasible cost so far'); ax.legend(fontsize=7.5); ax.grid(alpha=0.3)
 fig.tight_layout(); fig.savefig(os.path.join(REP, 'final_F1.pdf')); plt.close(fig)
 
-# ---------------- Table 3
-runs = rd('final_GA_repair.csv')
-for extra in ('final_SA_scaling.csv',):
-    if os.path.exists(os.path.join(R, extra)): runs += rd(extra)
+# ---------------- Table 3: run of Hafizi (final_scaling_*.csv); best known = best over ALL runs of the team (also the second run)
+ex = {r['instance']: r for r in rd('final_exact.csv')}                      # second run (other machine)
+exH = {r['size']: r for r in rd('final_scaling_exact.csv')}                 # run of Table 3
+runsB = rd('final_GA_repair.csv') + rd('final_SA_scaling.csv')
+runsH = rd('final_scaling_methods.csv')
 t3 = []
 for size in ('100', '200', '400'):
-    e = ex[size]
-    sub = [r for r in runs if r['size'] == size]
-    confs = []
-    for r in sub:
-        if r['configuration'] not in confs: confs.append(r['configuration'])
-    best_known = min([float(e['objective'])] + [float(r['cost']) for r in sub if r['feasible'] == 'True'])
+    e = exH[size]; zo = float(e['objective'])
+    allc = [zo, float(ex[size]['objective'])] + [float(r['cost']) for r in runsB + runsH if r['size'] == size and r['feasible'] == 'True']
+    best_known = min(allc)
     bk = lambda v: 100 * (v - best_known) / best_known
-    zo = float(e['objective'])
-    t3.append([size, 'exact (HiGHS)', zo, zo, best_known, bk(zo), bk(zo), 100 * float(e['solver_gap']), e['proven'], float(e['seconds']), '1/1', float(e['z_LP']), float(e['bound'])])
-    for cf in confs:
-        rr = [r for r in sub if r['configuration'] == cf]
-        c = np.array([float(r['cost']) for r in rr if r['feasible'] == 'True'])
-        t3.append([size, cf, c.min(), c.mean(), best_known, bk(c.min()), bk(c.mean()), '', '', np.mean([float(r['seconds']) for r in rr]), f'{len(c)}/{len(rr)}', c.std(ddof=1), c.max()])
-with open(os.path.join(R, 'final_table3.csv'), 'w', newline='') as fh:
-    w = csv.writer(fh); w.writerow(['size', 'method', 'best', 'mean', 'best_known', 'gap_best_pct', 'gap_mean_pct', 'solver_gap_pct', 'proven', 'time_s', 'feasible', 'zLP_or_std', 'bound_or_worst'])
+    t3.append([size, 'exact (HiGHS)', zo, zo, best_known, bk(zo), bk(zo), float(e['solver_gap_pct']), e['proven'], float(e['seconds']), '1/1', float(e['best_bound']), ''])
+    for m, lab in (('GA repair', 'GA'), ('SA transfer', 'SA')):
+        for st, sl in (('own', 'own start'), ('LP-rounded', 'LP-rounded start')):
+            rr = [r for r in runsH if r['size'] == size and r['method'] == m and r['start'] == st]
+            c = np.array([float(r['cost']) for r in rr if r['feasible'] == 'True'])
+            t3.append([size, f'{lab}, {sl}', c.min(), c.mean(), best_known, bk(c.min()), bk(c.mean()), '', '', np.mean([float(r['seconds']) for r in rr]), f'{len(c)}/{len(rr)}', c.std(ddof=1), c.max()])
+with open(os.path.join(R, 'final_table3_report.csv'), 'w', newline='') as fh:
+    w = csv.writer(fh); w.writerow(['size', 'method', 'best', 'mean', 'best_known_all_runs', 'gap_best_pct', 'gap_mean_pct', 'solver_gap_pct', 'proven', 'time_s', 'feasible', 'bound_or_std', 'worst'])
     for r in t3: w.writerow([f'{v:.6f}' if isinstance(v, float) else v for v in r])
-names = {'GA, repair': 'GA, own start', 'GA, repair, LP-rounded start': 'GA, LP-rounded start',
-         'SA, transfer, own start': 'SA, own start', 'SA, transfer, LP-rounded start': 'SA, LP-rounded start'}
-label = {'100': 'small', '200': 'medium', '400': 'large'}
 with open(os.path.join(REP, 'final_table3.tex'), 'w') as fh:
     for r in t3:
-        first = r[1].startswith('exact')
-        sz = f"$M={r[0]}$" if first else ''
-        if first:
-            fh.write(('\\midrule\n' if r[0] != '100' else '') + f"{sz} & exact (HiGHS) & {r[2]:.4f} & -- & {r[4]:.4f} & {r[5]:.2f} & -- & {r[7]:.2f} ({'proven' if r[8] == 'True' else 'not proven'}) & {r[9]:.1f}\\\\\n")
+        if r[1].startswith('exact'):
+            fh.write(('\\midrule\n' if r[0] != '100' else '') + f"$M={r[0]}$ & exact (HiGHS) & {r[2]:.4f} & -- & {r[4]:.4f} & {r[5]:.2f} & -- & {r[7]:.2f} ({'proven' if r[8] == 'True' else 'not proven'}) & {r[9]:.1f}\\\\\n")
         else:
-            fh.write(f"{sz} & {names[r[1]]} & {r[2]:.4f} & {r[3]:.4f} & {r[4]:.4f} & {r[5]:.2f} & {r[6]:.2f} & & {r[9]:.1f}\\\\\n")
+            fh.write(f" & {r[1]} & {r[2]:.4f} & {r[3]:.4f} & {r[4]:.4f} & {r[5]:.2f} & {r[6]:.2f} & & {r[9]:.1f}\\\\\n")
+for r in t3: print([round(v, 4) if isinstance(v, float) else v for v in r])
 
 # ---------------- Figure F2
-fig, ax = plt.subplots(figsize=(5.6, 3.4))
-xs = [50, 100, 200, 400]; ys = [float(ex[k]['seconds']) for k in ('own', '100', '200', '400')]
-pr = [ex[k]['proven'] == 'True' for k in ('own', '100', '200', '400')]
-ax.plot(xs, ys, '-', color='C0', lw=1)
-ax.plot([x for x, q in zip(xs, pr) if q], [y for y, q in zip(ys, pr) if q], 'o', color='C0', label='optimum proven (solver gap 0)')
-ax.plot([x for x, q in zip(xs, pr) if not q], [y for y, q in zip(ys, pr) if not q], 'x', color='C3', ms=9, mew=2, label='stopped by the limit, not proven')
-ax.axhline(120, color='C3', ls='--', lw=1, label='limit 120 s')
-for x, y in zip(xs, ys): ax.annotate(f'{y:.1f} s', (x, y), textcoords='offset points', xytext=(4, -12), fontsize=8)
-ax.set_xlabel('M (virtual machines); M = 50 is the own instance'); ax.set_ylabel('time of HiGHS, s'); ax.set_xticks(xs)
-ax.set_ylim(0, 135); ax.legend(fontsize=8, loc='center right'); ax.grid(alpha=0.3)
+fig, ax = plt.subplots(figsize=(5.8, 3.5))
+xs = [100, 200, 400]; ys = [float(exH[str(k)]['seconds']) for k in xs]; pr = [exH[str(k)]['proven'] == 'True' for k in xs]
+ax.plot(xs, ys, '-', color='C0', lw=1.2, label='run of Table 3')
+xb = [50, 100, 200, 400]; yb = [float(ex[k]['seconds']) for k in ('own', '100', '200', '400')]; pb = [ex[k]['proven'] == 'True' for k in ('own', '100', '200', '400')]
+ax.plot(xb, yb, '--', color='gray', lw=1, label='second run, other machine')
+for X, Y, P, col in ((xs, ys, pr, 'C0'), (xb, yb, pb, 'gray')):
+    ax.plot([x for x, q in zip(X, P) if q], [y for y, q in zip(Y, P) if q], 'o', color=col)
+    ax.plot([x for x, q in zip(X, P) if not q], [y for y, q in zip(Y, P) if not q], 'x', color='C3', ms=9, mew=2)
+ax.plot([], [], 'o', color='k', label='optimum proven (solver gap 0)'); ax.plot([], [], 'x', color='C3', mew=2, label='stopped by the limit, not proven')
+ax.axhline(120, color='C3', ls=':', lw=1, label='limit 120 s')
+for x, y in zip(xs[:1], ys[:1]): ax.annotate(f'{y:.1f} s', (x, y), textcoords='offset points', xytext=(6, -12), fontsize=8)
+ax.annotate(f'{yb[0]:.1f} s', (xb[0], yb[0]), textcoords='offset points', xytext=(6, 2), fontsize=8); ax.annotate(f'{yb[1]:.1f} s', (xb[1], yb[1]), textcoords='offset points', xytext=(-34, 4), fontsize=8)
+ax.set_xlabel('M (virtual machines); M = 50 is the own instance'); ax.set_ylabel('time of HiGHS, s'); ax.set_xticks(xb)
+ax.set_ylim(0, 135); ax.legend(fontsize=7, loc='lower right'); ax.grid(alpha=0.3)
 fig.tight_layout(); fig.savefig(os.path.join(REP, 'final_F2.pdf')); plt.close(fig)

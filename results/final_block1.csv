@@ -1,6 +1,11 @@
 solution,reference_objective,cp1_objective,feasible,servers_where_memory_util_exceeds_cpu_util,hamming_to_reference_optimum
-reference optimum (HiGHS),8.382826337,9.987752624,True,7,0
+"reference optimum, placement A (HiGHS run of final/src/run_exact.py)",8.382826337,9.987752624,True,7,0
+"reference optimum, placement B (first solve of final_block1.py)",8.382826337,11.294573791,True,9,45
+"reference optimum, placement C (second solve of final_block1.py)",8.382826337,10.966209176,True,7,38
+"reference-optimal placement with the lowest f_CP1 found (final_block1.py, MILP, 600 s)",8.382826337,8.267809497,True,9,40
+"reference-optimal placement with the highest f_CP1 found (final_block1.py, MILP, 600 s)",8.382826337,14.428042560,True,7,44
 "best approximate solution (GA, seed 4)",8.382826337,10.688779289,True,8,45
+best SA solution (seed 3),8.391877054,11.426841161,True,6,43
 GA seed 0,8.415025202,10.275248612,True,7,43
 GA seed 1,8.402116460,11.063582654,True,8,43
 GA seed 2,8.404378061,10.192431458,True,8,42
