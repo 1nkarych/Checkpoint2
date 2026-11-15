@@ -146,3 +146,11 @@ final runs (GA-A): `python experiments/run_final.py --module src.meta.ga --insta
 | Tool or source | Used for | Files | What I checked myself |
 |---|---|---|---|
 | AI assistant(Claude) | help with debugging and code implemetnting | src/meta/ga_problem.py, tests/test_GA-P.py | ran the role test and the test of the partner, ran the whole experiment myself (20 runs) and compared the results with a reference run; |
+
+
+
+### Hafizi Nazifullah
+
+| Tool or source | Used for | Files or sections | What I checked myself |
+|---|---|---|---|
+| ChatGPT (OpenAI) | Assistance with Python coding, debugging, LP rounding, LaTeX writing, and analysis of Block 3 (Scaling). | `final/src/run_block3_hafizi.py`, `final/src/block3_scaled_model_hafizi.py`, `final/src/block3_lp_rounding_hafizi.py`, Section 3 of the final report. | I personally ran the scaling experiments for M = 100, 200, and 400 using seeds 0–9, a budget of 100,000 evaluations, and a 120-second HiGHS limit. I verified that all 120 heuristic runs completed and reviewed the generated CSV results. |
