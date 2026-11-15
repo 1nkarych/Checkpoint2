@@ -1,0 +1,4 @@
+team,story,variant,size,servers,time_limit_s,objective,best_bound,solver_gap_pct,proven,seconds,has_feasible_incumbent,status,message
+T10,B,2,100,29,120,9.176682013916906,9.176682013916906,0.0,True,19.39855019999959,True,proven optimal (solver bound meets incumbent),Optimization terminated successfully. (HiGHS Status 7: Optimal)
+T10,B,2,200,57,120,24.928666084292075,24.872411572049412,0.22566194297139,False,120.07048309999936,True,feasible incumbent; optimality not proven,Time limit reached. (HiGHS Status 13: Time limit reached)
+T10,B,2,400,114,120,61.19943070485648,54.82250731156234,10.419906394305888,False,120.30865050000011,True,feasible incumbent; optimality not proven,Time limit reached. (HiGHS Status 13: Time limit reached)

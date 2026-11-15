@@ -1,0 +1,27 @@
+{
+  "complete": true,
+  "smoke": false,
+  "sizes": [
+    100,
+    200,
+    400
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "budget": 100000,
+  "exact_limit": 120,
+  "recorded_methods": 120,
+  "recorded_exact": 3,
+  "table": "C:\\Users\\nazif\\OneDrive\\Desktop\\T10_Block3_Python_COMPLETE\\T10_Block3_Python\\results\\final_table3.csv",
+  "figure": "final_F2.png"
+}

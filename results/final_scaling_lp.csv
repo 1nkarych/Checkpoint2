@@ -1,0 +1,4 @@
+team,story,variant,size,z_LP,seconds,rounding_rule,trial,rounded_cost,rounded_feasible,start_file,status
+T10,B,2,100,9.0421146953405,0.04600089999985357,confidence-priority LP-guided feasible greedy,0,9.87391122127044,True,results\final_LP_rounded_B2_100.json,ok
+T10,B,2,200,24.67641325536062,0.2087164999993547,confidence-priority LP-guided feasible greedy,0,27.362392083036,True,results\final_LP_rounded_B2_200.json,ok
+T10,B,2,400,54.47727272727271,2.501421500000106,confidence-priority LP-guided feasible greedy,0,63.45641056324836,True,results\final_LP_rounded_B2_400.json,ok
