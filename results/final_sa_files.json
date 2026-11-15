@@ -1,0 +1,122 @@
+{
+ "z_ref": 8.382826336851886,
+ "z_LP": 8.339506172839506,
+ "SA_row": {
+  "n": 10,
+  "best": 8.391877054,
+  "mean": 8.4117010199,
+  "worst": 8.425814593,
+  "std": 0.00891053010490655,
+  "gap_ref_mean": 0.344450450096737,
+  "gap_ref_worst": 0.5128133927710303,
+  "gap_LP_mean": 0.8582669175913309,
+  "gap_LP_worst": 1.0243332464518873,
+  "feasible": "10/10",
+  "mean_seconds": 3.121,
+  "budget": [
+   100000
+  ],
+  "evals": [
+   100000
+  ],
+  "params": {
+   "T0": 1.0570236966839537,
+   "Tend": 0.010473720352671537
+  },
+  "max_abs_diff_to_rerun_in_scan": 4.700879685515247e-10,
+  "distinct_final_costs": 9,
+  "tied_seeds": [
+   "0",
+   "8"
+  ]
+ },
+ "random_SA_pair": {
+  "n": 10,
+  "best": 9.066985082,
+  "mean": 9.2093349498,
+  "worst": 9.317373676,
+  "std": 0.07541026280919298,
+  "gap_ref_mean": 9.859545930406377,
+  "gap_ref_worst": 11.148356193897692,
+  "gap_LP_mean": 9.445076997437088,
+  "gap_LP_worst": 10.49509805192549,
+  "feasible": "10/10",
+  "mean_seconds": 10.376,
+  "mean_feasible_candidates": 4075.2,
+  "method": "uniform random over allowed servers"
+ },
+ "tuning": {
+  "n_calls": 80,
+  "tuning_seeds": [
+   100,
+   101,
+   102,
+   103,
+   104
+  ],
+  "runs_per_call": [
+   5
+  ],
+  "budget_per_run": 100000,
+  "total_runs": 400,
+  "first_call": {
+   "call": "tune-NM-call01",
+   "mean": 8.406866793,
+   "T0": 2.1090395480225883,
+   "Tend": 0.0037162162162160694
+  },
+  "best_call": {
+   "call": "tune-NM-call10",
+   "mean": 8.395371356800002,
+   "T0": 1.0570236966839537,
+   "Tend": 0.010473720352671537
+  },
+  "calls_with_the_best_mean": 14,
+  "tuning_seed_std_first_call": 0.014880988575817523,
+  "tuning_seed_se_first_call": 0.006654980405585153,
+  "tuning_seeds_improvement_first_to_best": 0.01149543619999882
+ },
+ "compare_seeds_0_9": {
+  "rule": {
+   "n": 10,
+   "best": 8.382826337,
+   "mean": 8.3974866391,
+   "worst": 8.413455836,
+   "std": 0.009522093147265435,
+   "gap_ref_mean": 0.17488495716134975,
+   "gap_ref_worst": 0.36538391608404586,
+   "gap_LP_mean": 0.6904502353183615,
+   "gap_LP_worst": 0.8789451635803931
+  },
+  "tuned": {
+   "n": 10,
+   "best": 8.391877054,
+   "mean": 8.4117010199,
+   "worst": 8.425814593,
+   "std": 0.00891053010490655,
+   "gap_ref_mean": 0.344450450096737,
+   "gap_ref_worst": 0.5128133927710303,
+   "gap_LP_mean": 0.8582669175913309,
+   "gap_LP_worst": 1.0243332464518873
+  },
+  "rule_params": {
+   "T0": 2.1090395480225883,
+   "Tend": 0.0037162162162160685
+  },
+  "tuned_params": {
+   "T0": 1.0570236966839537,
+   "Tend": 0.010473720352671537
+  },
+  "tuned_equals_hafizi_runs": true,
+  "mean_diff_tuned_minus_rule": 0.01421438080000037,
+  "welch_se": 0.004123927795871859,
+  "welch_t_p": 0.002891896167078314,
+  "mann_whitney_p": 0.004016545697604338,
+  "rule_better_seeds_nominal_pairing": 9,
+  "runs_reaching_zref": {
+   "rule": 1,
+   "tuned": 0
+  },
+  "tuned_equals_rule_params_of_first_call": true
+ }
+}

@@ -1,0 +1,99 @@
+{
+ "z_ref": 8.382826336851886,
+ "z_LP": 8.339506172839506,
+ "n_seeds": 10,
+ "GA": {
+  "best": 8.382826336851888,
+  "mean": 8.414276712884405,
+  "worst": 8.44588939991495,
+  "std": 0.018361929501152913,
+  "range": 0.06306306306306197,
+  "gap_ref_mean": 0.3751762802750535,
+  "gap_ref_worst": 0.7522887929317006,
+  "gap_LP_mean": 0.888615178657077,
+  "gap_LP_worst": 1.2595858415635324
+ },
+ "SA": {
+  "best": 8.39187705423594,
+  "mean": 8.411701020131762,
+  "worst": 8.425814593470088,
+  "std": 0.008910530137634074,
+  "range": 0.03393753923414877,
+  "gap_ref_mean": 0.34445045286145226,
+  "gap_ref_worst": 0.5128133983787806,
+  "gap_LP_mean": 0.8582669203229086,
+  "gap_LP_worst": 1.0243332519738781
+ },
+ "comparison_GA_minus_SA": {
+  "mean_difference": 0.002575692752643377,
+  "paired_se": 0.005367526809484098,
+  "welch_se": 0.0064541304785307434,
+  "ga_better_seeds": 6,
+  "sa_better_seeds": 4,
+  "ties": 0,
+  "paired_t_p": 0.6427698157081293,
+  "welch_t_p": 0.6963071366356608,
+  "mann_whitney_U": 50.5,
+  "mann_whitney_p": 1.0,
+  "wilcoxon_signed_rank_p": 0.6953125,
+  "levene_median_p": 0.058465155406754975,
+  "levene_mean_p": 0.05500366802856071,
+  "std_ratio_SA_over_GA": 0.485271993723459,
+  "note": "n = 10 per method; no test is significant at 0.05; Levene p is borderline and is read as a weak indication only"
+ },
+ "gap_LP_decomposition": {
+  "GA": {
+   "gap_LP_mean": 0.888615178657077,
+   "integrality_part": 0.5148412096555598,
+   "method_part": 0.37377396900151716,
+   "sum": 0.888615178657077,
+   "gap_ref_mean": 0.3751762802750535
+  },
+  "SA": {
+   "gap_LP_mean": 0.8582669203229086,
+   "integrality_part": 0.5149988558640137,
+   "method_part": 0.34326806445889485,
+   "sum": 0.8582669203229085,
+   "gap_ref_mean": 0.34445045286145226
+  },
+  "integrality_gap_of_exact_optimum_gap_LP": 0.5167727717552686
+ },
+ "neighbourhood_scan": {
+  "GA": {
+   "no_improving_transfer": 8,
+   "at_least_one_improving_transfer": 2,
+   "at_least_one_improving_swap": 9,
+   "no_improving_swap": 1,
+   "descent_transfer_swap_reaches_zref": 5,
+   "descent_transfer_only_reaches_zref": 1
+  },
+  "SA": {
+   "no_improving_transfer": 4,
+   "at_least_one_improving_transfer": 6,
+   "at_least_one_improving_swap": 10,
+   "no_improving_swap": 0,
+   "descent_transfer_swap_reaches_zref": 6,
+   "descent_transfer_only_reaches_zref": 0
+  }
+ },
+ "worst_seed_checks": {
+  "GA": {
+   "seed": 8,
+   "cost": 8.44588939991495,
+   "improving_transfers": 0,
+   "improving_swaps": 20,
+   "best_swap_delta": -0.03086419753086389,
+   "cost_after_best_swap": 8.415025202384086,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  "SA": {
+   "seed": 6,
+   "cost": 8.425814593470088,
+   "improving_transfers": 0,
+   "improving_swaps": 8,
+   "best_swap_delta": -0.03007951454279123,
+   "cost_after_best_swap": 8.395735078927297,
+   "descent_transfer_swap": 8.382826336851888
+  }
+ }
+}

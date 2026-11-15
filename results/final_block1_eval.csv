@@ -1,0 +1,4 @@
+solution,reference_cost,cp1_objective,rank_reference,rank_cp1,cp1_cpu_only,servers_memory_binding,max_U,objective_used
+Reference optimum (exact),8.382826337,11.294573791,1,2,7.151254493,9,0.953846,CP1
+GA best seed,8.382826337,10.688779289,1,1,7.151254493,8,0.984615,CP1
+SA best seed,8.391877054,11.426841161,2,3,7.152013658,6,0.990826,CP1

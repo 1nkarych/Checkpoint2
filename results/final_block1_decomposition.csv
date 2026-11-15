@@ -1,0 +1,4 @@
+solution,cp1_objective,cp1_cpu_only,servers_memory_binding,max_U
+Reference optimum (exact),11.294573791,7.151254493,9,0.953846
+GA best seed,10.688779289,7.151254493,8,0.984615
+SA best seed,11.426841161,7.152013658,6,0.990826

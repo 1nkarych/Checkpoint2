@@ -1,0 +1,186 @@
+{
+ "SA": [
+  {
+   "seed": 0,
+   "cost": 8.41754855907411,
+   "tr_improving": 0,
+   "sw_improving": 7,
+   "best_swap_delta": -0.019290123456789487,
+   "descent_transfer_only": 8.41754855907411,
+   "descent_transfer_swap": 8.39825843561732
+  },
+  {
+   "seed": 1,
+   "cost": 8.411613896341203,
+   "tr_improving": 1,
+   "sw_improving": 7,
+   "best_swap_delta": -0.013355460723882828,
+   "descent_transfer_only": 8.410964123761605,
+   "descent_transfer_swap": 8.39825843561732
+  },
+  {
+   "seed": 2,
+   "cost": 8.41342877837387,
+   "tr_improving": 1,
+   "sw_improving": 23,
+   "best_swap_delta": -0.015432098765433722,
+   "descent_transfer_only": 8.399593103618654,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 3,
+   "cost": 8.39187705423594,
+   "tr_improving": 1,
+   "sw_improving": 7,
+   "best_swap_delta": -0.007716049382716861,
+   "descent_transfer_only": 8.384161004853222,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 4,
+   "cost": 8.405223734249285,
+   "tr_improving": 0,
+   "sw_improving": 6,
+   "best_swap_delta": -0.013346680013347267,
+   "descent_transfer_only": 8.405223734249285,
+   "descent_transfer_swap": 8.384161004853222
+  },
+  {
+   "seed": 5,
+   "cost": 8.410431982424866,
+   "tr_improving": 2,
+   "sw_improving": 4,
+   "best_swap_delta": -0.014899957428694321,
+   "descent_transfer_only": 8.399060962281915,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 6,
+   "cost": 8.425814593470088,
+   "tr_improving": 0,
+   "sw_improving": 8,
+   "best_swap_delta": -0.03007951454279123,
+   "descent_transfer_only": 8.425814593470088,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 7,
+   "cost": 8.413690534382752,
+   "tr_improving": 0,
+   "sw_improving": 5,
+   "best_swap_delta": -0.014097430764097751,
+   "descent_transfer_only": 8.413690534382752,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 8,
+   "cost": 8.41754855907411,
+   "tr_improving": 1,
+   "sw_improving": 10,
+   "best_swap_delta": -0.023148148148148806,
+   "descent_transfer_only": 8.41679780832336,
+   "descent_transfer_swap": 8.390542386234603
+  },
+  {
+   "seed": 9,
+   "cost": 8.409832509691395,
+   "tr_improving": 1,
+   "sw_improving": 10,
+   "best_swap_delta": -0.011574074074072627,
+   "descent_transfer_only": 8.402116460308676,
+   "descent_transfer_swap": 8.382826336851888
+  }
+ ],
+ "GA": [
+  {
+   "seed": 0,
+   "cost": 8.415025202384085,
+   "tr_improving": 0,
+   "sw_improving": 10,
+   "best_swap_delta": -0.011574074074074403,
+   "descent_transfer_only": 8.415025202384085,
+   "descent_transfer_swap": 8.390542386234603
+  },
+  {
+   "seed": 1,
+   "cost": 8.402116460308678,
+   "tr_improving": 0,
+   "sw_improving": 4,
+   "best_swap_delta": -0.019290123456789487,
+   "descent_transfer_only": 8.402116460308678,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 2,
+   "cost": 8.404378060989817,
+   "tr_improving": 0,
+   "sw_improving": 19,
+   "best_swap_delta": -0.02155172413792883,
+   "descent_transfer_only": 8.404378060989817,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 3,
+   "cost": 8.418883227075446,
+   "tr_improving": 0,
+   "sw_improving": 7,
+   "best_swap_delta": -0.019290123456791264,
+   "descent_transfer_only": 8.418883227075446,
+   "descent_transfer_swap": 8.39825843561732
+  },
+  {
+   "seed": 4,
+   "cost": 8.382826336851888,
+   "tr_improving": 0,
+   "sw_improving": 0,
+   "best_swap_delta": 0.0,
+   "descent_transfer_only": 8.382826336851888,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 5,
+   "cost": 8.40211646030868,
+   "tr_improving": 0,
+   "sw_improving": 3,
+   "best_swap_delta": -0.014097430764099528,
+   "descent_transfer_only": 8.40211646030868,
+   "descent_transfer_swap": 8.386684361543246
+  },
+  {
+   "seed": 6,
+   "cost": 8.436087931780149,
+   "tr_improving": 1,
+   "sw_improving": 14,
+   "best_swap_delta": -0.019290123456789487,
+   "descent_transfer_only": 8.421406583765467,
+   "descent_transfer_swap": 8.39825843561732
+  },
+  {
+   "seed": 7,
+   "cost": 8.409629455760271,
+   "tr_improving": 0,
+   "sw_improving": 8,
+   "best_swap_delta": -0.015432098765433722,
+   "descent_transfer_only": 8.409629455760271,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 8,
+   "cost": 8.44588939991495,
+   "tr_improving": 0,
+   "sw_improving": 20,
+   "best_swap_delta": -0.03086419753086389,
+   "descent_transfer_only": 8.44588939991495,
+   "descent_transfer_swap": 8.382826336851888
+  },
+  {
+   "seed": 9,
+   "cost": 8.425814593470088,
+   "tr_improving": 1,
+   "sw_improving": 25,
+   "best_swap_delta": -0.022363465160076146,
+   "descent_transfer_only": 8.422538197835676,
+   "descent_transfer_swap": 8.39825843561732
+  }
+ ]
+}

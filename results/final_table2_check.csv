@@ -1,0 +1,5 @@
+method,best,mean,worst,std,gap_ref_mean,gap_ref_worst,gap_LP_mean,gap_LP_worst,provenance
+GA with repair (N = 30),8.382826,8.414277,8.445889,0.018362,0.3752,0.7523,0.8886,1.2596,recomputed from per-seed results; matches printed Table 2: True
+"SA, transfer move",8.391877,8.411701,8.425815,0.008911,0.3445,0.5128,0.8583,1.0243,recomputed from per-seed results; matches printed Table 2: True
+Random search,8.7888,8.8468,8.9388,0.0541,5.5348,6.6323,5.7342,6.7044,values QUOTED from the draft (source files not in this checkout); only the gap formulas are recomputed
+Exact solver (HiGHS),8.382826336851886,8.382826336851886,8.382826336851886,,0.0000,0.0000,0.5168,0.5168,z_ref of the reference solve (final_block1_solutions.json); gaps recomputed

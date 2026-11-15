@@ -1,0 +1,4 @@
+row,n,best,mean,worst,std,gap_ref_mean,gap_ref_worst,gap_LP_mean,gap_LP_worst,source
+"SA, tuned parameters (Table 2 row)",10,8.391877,8.411701,8.425815,0.008911,0.3445,0.5128,0.8583,1.0243,Hafizi_runs.csv
+"SA, rule parameters (seeds 0-9)",10,8.382826,8.397487,8.413456,0.009522,0.1749,0.3654,0.6905,0.8789,Shaken_tuning.csv compare-rule
+random search of the SA pair,10,9.066985,9.209335,9.317374,0.075410,9.8595,11.1484,9.4451,10.4951,Shaken_tuning.csv random
