@@ -76,8 +76,8 @@ Replace 100 by 200 and 400 for the other sizes. Block 3 was run twice (two machi
 
 | Tool or source | Used for | Files or sections | What I checked myself |
 |---|---|---|---|
-| | | AI assistant (Claude) | drafted the text of Block 1 (Table 1 element by element, own objective on the reference solutions, conclusion) from the existing results; checked the Checkpoint 1 model against `T10_Checkpoint1.pdf` | report Section 1 | Compared Table 1 with my Checkpoint 1 report; recomputed the three values of the Checkpoint 1 objective (11.294574, 10.688779, 11.426841) with `python final/src/final_block1.py` and compared them with `results/final_block1_eval.csv`; read Section 1 completely |
-| Python libraries (numpy, scipy) | evaluation of the objectives, HiGHS (`scipy.optimize.milp`) | `final/src/final_block1.py`  | | | |
+| AI assistant (Claude) | drafted the text of Block 1 (Table 1, own objective on the reference solutions, conclusion); statistics of the SA files of Checkpoint 4 (SA tuned against rule, random baseline of the SA pair) | report Section 1; `final/src/final_sa_files.py` | compared Table 1 with my Checkpoint 1 report; ran `python final/src/final_block1.py` and `python final/src/final_sa_files.py` and compared the results with `results/final_block1_eval.csv` and `results/Hafizi_runs.csv`; read Section 1 completely |
+| Python libraries (`numpy`, `scipy`) | evaluation of the objectives, HiGHS (`scipy.optimize.milp`), statistical tests | `final/src/final_block1.py`, `final/src/final_sa_files.py` | - |
 
 ---
 
