@@ -76,7 +76,8 @@ Replace 100 by 200 and 400 for the other sizes. Block 3 was run twice (two machi
 
 | Tool or source | Used for | Files or sections | What I checked myself |
 |---|---|---|---|
-| FILL IN | | | |
+| | | AI assistant (Claude) | drafted the text of Block 1 (Table 1 element by element, own objective on the reference solutions, conclusion) from the existing results; checked the Checkpoint 1 model against `T10_Checkpoint1.pdf` | report Section 1 | Compared Table 1 with my Checkpoint 1 report; recomputed the three values of the Checkpoint 1 objective (11.294574, 10.688779, 11.426841) with `python final/src/final_block1.py` and compared them with `results/final_block1_eval.csv`; read Section 1 completely |
+| Python libraries (numpy, scipy) | evaluation of the objectives, HiGHS (`scipy.optimize.milp`) | `final/src/final_block1.py`  | | | |
 
 ---
 
