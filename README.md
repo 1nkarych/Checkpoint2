@@ -71,7 +71,7 @@ Replace 100 by 200 and 400 for the other sizes. Block 3 was run twice (two machi
 
 | Tool or source | Used for | Files or sections | What I checked myself |
 |---|---|---|---|
-| FILL IN | | | |
+| ChatGPT (OpenAI) | assistance with Python coding, debugging, LP rounding, LaTeX writing and analysis of Block 3 (Scaling) | `final/src/run_block3_hafizi.py`, `final/src/block3_scaled_model_hafizi.py`, `final/src/block3_lp_rounding_hafizi.py`; Section 3 of the final report | I personally ran the scaling experiments for M = 100, 200 and 400 with seeds 0–9, a budget of 100 000 evaluations and a 120-second HiGHS limit; I verified that all 120 heuristic runs completed and reviewed the generated CSV results. |
 
 **Shaken Daniyal**
 
