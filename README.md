@@ -62,9 +62,10 @@ Replace 100 by 200 and 400 for the other sizes. Block 3 was run twice (two machi
 
 **Telgarin Diar**
 
-| Tool or source | Used for | Files or sections | What I checked myself |
+| Tool or Source | Used for | Files or sections | What I checked myself |
 |---|---|---|---|
-| FILL IN | | | |
+| Telgarin Diar (Lead Author & Developer) + AI Assistant (Claude) | Auditing Block 1 (report & code) against Final_Instructions.pdf, executing scripts, rebuilding reference models, and refining report wording | Block_1_Final.md (report Section 1), final/src/final_block1.py, results/final_block1_eval.csv, results/final_block1_decomposition.csv, results/final_block1_solutions.json, results/final_block1_reference_resolve.json, results/final_block1_optimal_set.json | Independently wrote and structured the core logic and scripts, ran control tests (11.294574, 10.688779, 11.426841), executed --resolve-reference (z_ref = 8.382826, z_LP = 8.339506), verified optimal sets, compared evaluation metrics with Checkpoint 1 results, and validated Section 1 |
+| Python libraries (numpy, scipy) | Array operations and MILP modeling using HiGHS (scipy.optimize.milp) | final/src/final_block1.py | — |
 
 **Hafizi Nazifullah**
 
